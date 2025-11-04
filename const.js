@@ -2,7 +2,12 @@
 let CURRENTFRAME = 0;
 const FPS = 30;
 
+function getCurrentFrame() { return CURRENTFRAME; }
+
+
 let currentMousePos = new Victor(0, 0);
+
+function getMousePos() { return currentMousePos.clone(); }
 
 const atoms = {
     hydrogen: {
@@ -64,7 +69,7 @@ function RGBFromHex(hex) {
     }
 
     // Ensure it's a valid 6-digit hex code
-    if (!/^[0-9A-Fa-f]{6}$/.test(hex)) {
+    if (!/^[0-9A-Fa-f]{6}$/.test(hex) && !/^[0-9A-Fa-f]{8}$/.test(hex)) {
         console.error("Invalid hex code:", hex);
         return null;
     }
@@ -79,9 +84,44 @@ function RGBFromHex(hex) {
     return { r, g, b, a };
 }
 
+function hexFromRGB(r, g, b, a = 255) {
+    const rhex = r.toString(16).padStart(2, '0');
+    const ghex = g.toString(16).padStart(2, '0');
+    const bhex = b.toString(16).padStart(2, '0');
+    const ahex = a.toString(16).padStart(2, '0');
+    return '#'+ rhex + ghex + bhex + ahex;
+}
+
+function darkenColor(hex, darkFactor) {
+    const rgb = RGBFromHex(hex);
+    rgb.r = Math.round(rgb.r * darkFactor);
+    rgb.g = Math.round(rgb.g * darkFactor);
+    rgb.b = Math.round(rgb.b * darkFactor);
+    return hexFromRGB(rgb.r, rgb.g, rgb.b, rgb.a);
+}
+
 function getTextColorFromBG(hex) {
     const rgb = RGBFromHex(hex);
     const br = getBrightness(rgb.r, rgb.g, rgb.b);
 
     return (br >= 150) ? '#000000' : '#FFFFFF';
+}
+
+
+
+function polarLerp(start, target, t, center = new Victor(0, 0)) {
+    const st = start.clone().subtract(center);
+    const tg = target.clone().subtract(center);
+    
+    const stangle = st.horizontalAngle();
+    const tgangle = tg.horizontalAngle();
+
+    const lerpangle = (1-t)*stangle + t*tgangle;
+
+    const strad = st.length();
+    const tgrad = tg.length();
+
+    const lerprad = (1-t)*strad + t*tgrad;
+
+    return new Victor(Math.cos(lerpangle), Math.sin(lerpangle)).multiplyScalar(lerprad).add(center);
 }

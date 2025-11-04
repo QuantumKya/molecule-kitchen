@@ -5,15 +5,20 @@ class Atom {
         this.pos = position;
         this.radius = rad;
     }
-    
-    update() {
-        
-    }
 
     draw(ctx) {
-        const TEXTSIZE = 70;
+        this.drawFromColor(ctx, this.elemData.color ?? '#888888');
+    }
 
-        ctx.fillStyle = this.elemData.color;
+    drawUnhighlighted(ctx) {
+        this.drawFromColor(ctx, darkenColor(this.elemData.color ?? '#888888', 0.8));
+    }
+
+    drawFromColor(ctx, color) {
+        const TEXTSIZE = 70;
+        const clr = color;
+
+        ctx.fillStyle = clr;
         ctx.strokeStyle = 'black';
         ctx.strokeWidth = 3;
         ctx.beginPath();
@@ -21,7 +26,7 @@ class Atom {
         ctx.fill();
         ctx.stroke();
 
-        ctx.fillStyle = getTextColorFromBG(this.elemData.color);
+        ctx.fillStyle = getTextColorFromBG(clr);
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = `${TEXTSIZE*this.radius/75}px Arial`;
@@ -29,6 +34,6 @@ class Atom {
     }
 
     checkIfMouseHover() {
-        return (currentMousePos.distanceSq(this.pos) < this.radius * this.radius);
+        return (getMousePos().distanceSq(this.pos) < this.radius * this.radius);
     }
 }
