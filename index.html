@@ -13,7 +13,30 @@
 </head>
 <body>
     
-    <canvas id="kansas" width="700" height="700"></canvas>
+    <div style="display: flex; flex-direction: row;">
+        <canvas id="kansas" width="700" height="700"></canvas>
+
+        <div style="height: min-content; display: flex; flex-direction: row;">
+            <div style="display: flex; flex-direction: column; gap: 15px; padding: 10px;">
+                <label for="templatemolecules">Template Molecules</label>
+                <select name="templatemolecules" id="templatemolecules">
+                    <option value="h2o">H2O</option>
+                    <option value="methane">Methane</option>
+                    <option value="ethene">Ethene</option>
+                </select>
+
+                <button onclick="loadTemplateMolecule()">Load</button>
+            </div>
+
+            <div style="border: lightgray solid 1px; width: 0px;"></div>
+
+            <div style="display: flex; flex-direction: column; gap: 0px; padding: 10px;">
+                <button onclick="getCanvasImage()">Download Canvas As Image</button>
+                <p>(for bug reporting or showcase)</p>
+            </div>
+        </div>
+
+    </div>
 
 </body>
 </html>

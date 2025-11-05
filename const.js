@@ -9,6 +9,13 @@ let currentMousePos = new Victor(0, 0);
 
 function getMousePos() { return currentMousePos.clone(); }
 
+let zoom = 1;
+
+
+let SHIFTING = false;
+let CTRLING = false;
+
+
 const atoms = {
     hydrogen: {
         symbol: 'H',
@@ -109,14 +116,20 @@ function getTextColorFromBG(hex) {
 
 
 
-function polarLerp(start, target, t, center = new Victor(0, 0)) {
+function polarLerp(start, target, t, center = new Victor(0, 0), counterclockwise = true) {
     const st = start.clone().subtract(center);
     const tg = target.clone().subtract(center);
     
-    const stangle = st.horizontalAngle();
-    const tgangle = tg.horizontalAngle();
+    const stangle = st.angle();
+    let tgangle = tg.angle();
 
-    const lerpangle = (1-t)*stangle + t*tgangle;
+    let deltangle = tgangle - stangle;
+    deltangle = ((deltangle + Math.PI) % (2 * Math.PI)) - Math.PI;
+
+    if (counterclockwise && deltangle < 0) deltangle += 2 * Math.PI;
+    if (!counterclockwise && deltangle > 0) deltangle -= 2 * Math.PI;
+
+    const lerpangle = stangle + deltangle * t;
 
     const strad = st.length();
     const tgrad = tg.length();
@@ -124,4 +137,12 @@ function polarLerp(start, target, t, center = new Victor(0, 0)) {
     const lerprad = (1-t)*strad + t*tgrad;
 
     return new Victor(Math.cos(lerpangle), Math.sin(lerpangle)).multiplyScalar(lerprad).add(center);
+}
+
+function roundToInterval(value, interval) {
+    return Math.round(value / interval) * interval;
+}
+
+function clampToAngleSpace(angle) {
+    return (angle + Math.PI) % (Math.PI * 2) - Math.PI;
 }

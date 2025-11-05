@@ -43,7 +43,7 @@ class Molecule {
             ctx.stroke();
             ctx.restore();
         }
-        for (const atom of this.atoms) atom.draw(ctx);
+        for (const atom of this.atoms.toReversed()) atom.draw(ctx);
     }
 
 
@@ -61,11 +61,39 @@ class Molecule {
             alert("Hey, there can't be a negative (or zero) covalent bond!");
             return;
         }
+        if (degree > this.atoms[atomId1].valence) {
+            alert("One or more of those molecules are already full.");
+        }
         this.bonds.push({ atom1: atomId1, atom2: atomId2, degree });
     }
 
+    destroyCovalentBond(atomId1, atomId2, degree = 1) {
+        if (degree <= 0) {
+            alert("Hey, there can't be a negative (or zero) covalent bond!");
+            return;
+        }
+        const bond = this.bonds.find((bond) => {
+            return (bond.atom1 === atomId1 && bond.atom2 === atomId2);
+        });
+        if (bond === undefined) {
+            alert("Uh, you're trying to break a bond that doesn't exist.");
+            alert("That sounds like it could be poetic but I can't let you do it here.");
+            return;
+        }
+        
+        if (bond.degree > degree) bond.degree -= degree;
+        else if (bond.degree < degree) {
+            alert(`There aren't even enough bonds to delete that many! {${degree}}`);
+            return;
+        }
+        else if (bond.degree === degree) {
+            this.bonds.splice(this.bonds.indexOf(bond), 1);
+        }
+    }
+
     organizeNeighbors(atomId, anchorId, initAngle) {
-        const originalPos = this.atoms[atomId].pos.clone();
+        const centerPos = this.atoms[atomId].pos.clone();
+        const anchorPos = this.atoms[anchorId].pos.clone();
 
         const neighborBonds = this.bonds.filter(
             (bond) => bond.atom1 === atomId || bond.atom2 === atomId
@@ -78,22 +106,30 @@ class Molecule {
             return;
         }
         
+
+        const anchorangle = anchorPos.clone().subtract(centerPos).angle();
+        const compareAnchor = clampToAngleSpace(anchorangle - initAngle);
+        const ccwise = compareAnchor < 0;
+
         const neighbors = neighborBonds.map(
             (bond) => this.atoms[bond.atom2]
         ).sort(
             (atomA, atomB) => {
-                if (this.atoms.indexOf(atomA) === anchorId) return -1;
-                if (this.atoms.indexOf(atomB) === anchorId) return 1;
+                const angleA = atomA.pos.clone().subtract(centerPos).angle();
+                const angleB = atomB.pos.clone().subtract(centerPos).angle();
 
-                return atomA.pos.horizontalAngle() - atomB.pos.horizontalAngle();
+                return angleA - angleB;
             }
         );
+        while (this.atoms.indexOf(neighbors[0]) !== anchorId) {
+            neighbors.push(neighbors.shift());
+        }
+
 
         const avgDistanceOut = neighbors.reduce(
-            (pn, neigh) => pn + neigh.pos.distance(originalPos),
+            (pn, neigh) => pn + neigh.pos.distance(centerPos),
             0
         ) / neighbors.length;
-
 
 
 
@@ -110,19 +146,19 @@ class Molecule {
 
 
 
-        const animDuration = 60;
+        const animDuration = 15;
 
         const startFrame = getCurrentFrame();
 
         const startPositions = neighbors.map(neigh => neigh.pos.clone());
-        const targetPositions = offsetVectors.map(vec => originalPos.clone().add(vec));
+        const targetPositions = offsetVectors.map(vec => centerPos.clone().add(vec));
 
         const moveAnimation = () => {
             const framesElapsed = getCurrentFrame() - startFrame;
             const lerprogress = framesElapsed / animDuration;
 
             neighbors.forEach((neigh, i) => {
-                neigh.pos = polarLerp(startPositions[i], targetPositions[i], lerprogress, originalPos);
+                neigh.pos = polarLerp(startPositions[i], targetPositions[i], lerprogress, centerPos, ccwise);
             });
             
             if (framesElapsed >= animDuration) {
@@ -133,5 +169,13 @@ class Molecule {
             else requestAnimationFrame(moveAnimation);
         };
         moveAnimation();
+    }
+
+    translateWhole(delta) {
+        for (const atom of this.atoms) atom.pos.add(delta);
+    }
+
+    translateOne(id, delta) {
+        this.atoms[id].pos.add(delta);
     }
 }

@@ -4,10 +4,24 @@ const ctx = canvas.getContext('2d');
 canvas.width = 700;
 canvas.height = 700;
 
+function getCanvasImage() {
+    const data = canvas.toDataURL('image/png');
+
+    const a = document.createElement('a');
+    a.href = data;
+
+    const d = new Date();
+    a.download = `molecule_kitchen_${d.toISOString().slice(0, 10).replace(/-/g, '')}.png`;
+
+    canvas.appendChild(a);
+    a.click();
+    canvas.removeChild(a);
+}
+
 
 function makeEthene() {
-    const C1 = new Atom(atoms.carbon, new Victor(200, 310), 65);
-    const C2 = new Atom(atoms.carbon, new Victor(500, 310), 65);
+    const C1 = new Atom(atoms.carbon, new Victor(200, 300), 65);
+    const C2 = new Atom(atoms.carbon, new Victor(500, 300), 65);
     const H1 = new Atom(atoms.hydrogen, new Victor(200, 150), 45);
     const H2 = new Atom(atoms.hydrogen, new Victor(200, 450), 45);
     const H3 = new Atom(atoms.hydrogen, new Victor(500, 150), 45);
@@ -15,10 +29,10 @@ function makeEthene() {
     
     const methane = new Molecule(C1, C2, H1, H2, H3, H4);
     methane.createCovalentBond(0, 1, 2);
-    methane.createCovalentBond(0, 2, 1);
-    methane.createCovalentBond(0, 3, 1);
-    methane.createCovalentBond(1, 4, 1);
-    methane.createCovalentBond(1, 5, 1);
+    methane.createCovalentBond(0, 2);
+    methane.createCovalentBond(0, 3);
+    methane.createCovalentBond(1, 4);
+    methane.createCovalentBond(1, 5);
     return methane;
 }
 
@@ -30,25 +44,51 @@ function makeMethane() {
     const H4 = new Atom(atoms.hydrogen, new Victor(300, 450), 45);
     
     const methane = new Molecule(C, H1, H2, H3, H4);
-    methane.createCovalentBond(0, 1, 1);
-    methane.createCovalentBond(0, 2, 1);
-    methane.createCovalentBond(0, 3, 1);
-    methane.createCovalentBond(0, 4, 1);
+    methane.createCovalentBond(0, 1);
+    methane.createCovalentBond(0, 2);
+    methane.createCovalentBond(0, 3);
+    methane.createCovalentBond(0, 4);
     return methane;
+}
+
+function makeWater() {
+    const anglebetween = 104.45;
+    const offsetvectors = [-1, 1].map((sign) => {
+        const angleoff = -Math.PI / 2 + sign * anglebetween / 2;
+        return new Victor(Math.cos(angleoff), Math.sin(angleoff)).multiplyScalar(200);
+    });
+    
+    const O = new Atom(atoms.oxygen, new Victor(300, 300), 70);
+    const H1 = new Atom(atoms.hydrogen, new Victor(300, 300).add(offsetvectors[0]), 45);
+    const H2 = new Atom(atoms.hydrogen, new Victor(300, 300).add(offsetvectors[1]), 45);
+
+    const h2o = new Molecule(O, H1, H2);
+    h2o.createCovalentBond(0, 1);
+    h2o.createCovalentBond(0, 2);
+    return h2o;
 }
 
 const ethene = makeEthene();
 const methane = makeMethane();
+const h2o = makeWater();
+
+let mol = h2o;
+
+function loadTemplateMolecule() {
+    const newmolecule = document.getElementById('templatemolecules').value;
+    eval(`mol = ${newmolecule};`);
+}
 
 
 
 let draggingAtom = -1;
+let lastMousePos = new Victor(0, 0);
 
 let organizeStage = 'null';
 let centerId = -1;
 let anchorId = -1;
 
-function init(mol) {
+function init() {
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     
     canvas.addEventListener('mousedown', (e) => {
@@ -59,7 +99,12 @@ function init(mol) {
         if (e.button === 0) {
     
             if (hovereeId === undefined) {
-                
+                console.log("Nothin!");
+            }
+            else {
+                draggingAtom = hovereeId;
+                lastMousePos = getMousePos();
+                canvas.style.cursor = 'grabbing';
             }
     
         }
@@ -84,8 +129,9 @@ function init(mol) {
                     organizeStage = 'setAngle';
                     break;
                 case 'setAngle':
-                    const angle = getMousePos().subtract(mol.atoms[centerId].pos).horizontalAngle();
-                    if (confirm(`Organize neighbors of atom ${centerId},\nwith anchor of atom ${anchorId},\nat a horizontal angle of ${(-angle * 180 / Math.PI).toPrecision(4+3)}º?`)) {
+                    let angle = getMousePos().subtract(mol.atoms[centerId].pos).angle();
+                    if (SHIFTING) angle = roundToInterval(angle, Math.PI / 4);
+                    if (confirm(`Organize neighbors of atom ${centerId},\nwith anchor of atom ${anchorId},\nat a horizontal angle of ${(-angle * 180 / Math.PI).toPrecision(4+2)}º?`)) {
                         mol.organizeNeighbors(centerId, anchorId, angle);
                         organizeStage = 'null';
                     }
@@ -95,31 +141,81 @@ function init(mol) {
             }
         }
     });
+
+    canvas.addEventListener('mouseup', (e) => {
+        e.preventDefault();
     
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            
-            if (organizeStage !== 'null') organizeStage = 'null';
-            
+        const hovereeId = mol.findHoveredAtom();
+    
+        if (e.button === 0) {
+    
+            if (hovereeId === undefined) {
+                
+            }
+            else {
+                draggingAtom = -1;
+                canvas.style.cursor = 'default';
+            }
+    
+        }
+    });
+    
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.pageX - rect.left;
+        const my = e.pageY - rect.top;
+        currentMousePos = new Victor(mx, my);
+    
+        const hovereeId = mol.findHoveredAtom();
+
+        if (hovereeId === undefined) {
+            canvas.style.cursor = 'default';
+        }
+        else {
+            canvas.style.cursor = 'grab';
         }
     });
 }
 
         
-canvas.addEventListener('mousemove', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.pageX - rect.left;
-    const my = e.pageY - rect.top;
-    currentMousePos = new Victor(mx, my); 
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Shift') SHIFTING = true;
+    if (e.key === 'Control') CTRLING = true;
+
+    if (e.key === 'Escape') {
+        
+        if (organizeStage !== 'null') organizeStage = 'null';
+        
+    }
+});
+document.addEventListener('keyup', (e) => {
+    if (e.key === 'Shift') SHIFTING = false;
+    if (e.key === 'Control') CTRLING = false;
 });
 
 
-function main(mol) {
-    // Update ----------------------------
+function main() {
+    // Update ---------------------------------------------------
 
     mol.update();
+
+    if (draggingAtom !== -1) {
+        const diff = getMousePos().subtract(lastMousePos);
+
+        if (SHIFTING) {
+            mol.translateOne(draggingAtom, diff);
+        }
+        else {
+            mol.translateWhole(diff);
+        }
+        lastMousePos = getMousePos();
+    }
+
+
     
-    // Draw ------------------------------
+    // Draw -----------------------------------------------------
+    ctx.scale(zoom, zoom);
+
     let bgColor = '#87b5ffff';
 
     if (organizeStage !== 'null') bgColor = darkenColor(bgColor, 0.8);
@@ -132,22 +228,34 @@ function main(mol) {
     if (organizeStage === 'setAngle') {
         const centerpos = mol.atoms[centerId].pos;
         const mousepos = getMousePos();
-        const angle = mousepos.clone().subtract(centerpos).horizontalAngle();
+        let angle = mousepos.clone().subtract(centerpos).angle();
+        if (SHIFTING) angle = roundToInterval(angle, Math.PI / 4);
+
+        const atomrad = mol.atoms[anchorId].pos.clone().subtract(centerpos).length();
+        const projpoint = new Victor(Math.cos(angle), Math.sin(angle)).multiplyScalar(atomrad).add(centerpos);
 
         const angleradius = mol.atoms[centerId].radius + 10;
 
         ctx.save();
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)'
+        
+        ctx.globalAlpha = 0.5;
+
+        ctx.strokeStyle = '#000000';
         ctx.lineWidth = 4;
         ctx.beginPath();
         ctx.moveTo(canvas.width, centerpos.y);
         ctx.lineTo(centerpos.x, centerpos.y);
         ctx.arc(centerpos.x, centerpos.y, angleradius, 0, angle, true);
         ctx.moveTo(centerpos.x, centerpos.y);
-        ctx.lineTo(mousepos.x, mousepos.y);
+        ctx.lineTo(projpoint.x, projpoint.y);
         ctx.stroke();
+
         ctx.restore();
     }
+
+    // DEBUG ZONE -----------------------------------------------
+
+    console.log(SHIFTING);
 }
 
 function run() {
@@ -155,7 +263,7 @@ function run() {
     const startTime = Date.now();
     
     
-    main(methane);
+    main();
     
     
     const endTime = Date.now();
@@ -165,5 +273,5 @@ function run() {
 }
 
 
-init(methane);
+init();
 run();

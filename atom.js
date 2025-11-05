@@ -15,6 +15,14 @@ class Atom {
     }
 
     drawFromColor(ctx, color) {
+        this.drawSuperCustom(ctx, color, this.pos);
+    }
+
+    drawFromPos(ctx, position) {
+        this.drawSuperCustom(ctx, this.elemData.color ?? '#888888', position);
+    }
+
+    drawSuperCustom(ctx, color, position) {
         const TEXTSIZE = 70;
         const clr = color;
 
@@ -22,7 +30,7 @@ class Atom {
         ctx.strokeStyle = 'black';
         ctx.strokeWidth = 3;
         ctx.beginPath();
-        ctx.arc(this.pos.x, this.pos.y, this.radius, 0, 360);
+        ctx.arc(position.x, position.y, this.radius, 0, 360);
         ctx.fill();
         ctx.stroke();
 
@@ -30,7 +38,7 @@ class Atom {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = `${TEXTSIZE*this.radius/75}px Arial`;
-        ctx.fillText(this.elemData.symbol, this.pos.x, this.pos.y);
+        ctx.fillText(this.elemData.symbol, position.x, position.y);
     }
 
     checkIfMouseHover() {
