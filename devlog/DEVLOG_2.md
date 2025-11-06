@@ -34,4 +34,6 @@ The angle logic for this stuff was really frustrating sometimes, but I made it l
 <br>
 <br>
 
-[<-- Previous Devlog](DEVLOG_1.md)<!--   [Next Devlog --\>](DEVLOG_11.md)-->
+Thanks for reading!
+
+[<-- Previous Devlog](DEVLOG_1.md)   [Next Devlog -->](DEVLOG_3.md)

@@ -9,8 +9,6 @@ let currentMousePos = new Victor(0, 0);
 
 function getMousePos() { return currentMousePos.clone(); }
 
-let zoom = 1;
-
 
 let SHIFTING = false;
 let CTRLING = false;
@@ -137,6 +135,10 @@ function polarLerp(start, target, t, center = new Victor(0, 0), counterclockwise
     const lerprad = (1-t)*strad + t*tgrad;
 
     return new Victor(Math.cos(lerpangle), Math.sin(lerpangle)).multiplyScalar(lerprad).add(center);
+}
+
+function polarVec(angle, radius) {
+    return new Victor(Math.cos(angle), Math.sin(angle)).multiplyScalar(radius);
 }
 
 function roundToInterval(value, interval) {

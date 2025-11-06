@@ -1,0 +1,39 @@
+.dropdownbtn {
+    background-color: whitesmoke;
+}
+
+.dropdown-box {
+    position: absolute;
+    display: none;
+
+    flex-direction: column;
+    gap: 3px;
+    padding: 5px;
+
+    border: #43b1ff solid 1px;
+    background-color: #ffffff;
+}
+
+.dropdown-display {
+    margin: 1px;
+    margin-bottom: -1px;
+}
+
+.dropdown-show {
+    display: flex;
+}
+
+.dropdown-item-selected {
+    background-color: #ababab;
+}
+
+.dropdown-item {
+    align-items: center;
+
+    padding: 5px;
+    user-select: none;
+}
+
+.dropdown-item:hover {
+    background-color: #e2e2e2;
+}

@@ -34,4 +34,6 @@ All the data is entered manually. I don't know how to do better than this to be 
 <br>
 <br>
 
+Thanks for reading!
+
 [Next Devlog -->](DEVLOG_2.md)

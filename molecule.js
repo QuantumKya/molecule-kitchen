@@ -91,7 +91,7 @@ class Molecule {
         }
     }
 
-    organizeNeighbors(atomId, anchorId, initAngle) {
+    organizeNeighbors(atomId, anchorId, initAngle, offsetMaker) {
         const centerPos = this.atoms[atomId].pos.clone();
         const anchorPos = this.atoms[anchorId].pos.clone();
 
@@ -126,23 +126,8 @@ class Molecule {
         }
 
 
-        const avgDistanceOut = neighbors.reduce(
-            (pn, neigh) => pn + neigh.pos.distance(centerPos),
-            0
-        ) / neighbors.length;
 
-
-
-        const betweenAngle = 2 * Math.PI / neighbors.length;
-
-        const orientAngles = [];
-        for (let i = 0; i < neighbors.length; i++) {
-            orientAngles.push(initAngle + i*betweenAngle);
-        }
-
-        const offsetVectors = orientAngles.map(
-            (angle) => new Victor(Math.cos(angle), Math.sin(angle)).multiplyScalar(avgDistanceOut)
-        );
+        const offsetVectors = offsetMaker(neighbors, initAngle, centerPos, anchorPos);
 
 
 
@@ -169,6 +154,45 @@ class Molecule {
             else requestAnimationFrame(moveAnimation);
         };
         moveAnimation();
+    }
+    
+    rotateAll(atomId, anchorId, initAngle) {
+        this.organizeNeighbors(atomId, anchorId, initAngle, (neighbors, initAngle, centerPos, anchorPos) => {
+
+            const anchorangle = anchorPos.clone().subtract(centerPos).angle();
+
+            const offsetVectors = neighbors.map((neigh) => {
+                const diffvec = neigh.pos.clone().subtract(centerPos);
+                const ang = diffvec.angle() + initAngle - anchorangle;
+
+                return polarVec(ang, diffvec.length());
+            });
+            return offsetVectors;
+
+        });
+    }
+
+    equalSpacing(atomId, anchorId, initAngle) {
+        this.organizeNeighbors(atomId, anchorId, initAngle, (neighbors, initAngle) => {
+            
+            const avgDistanceOut = neighbors.reduce(
+                (pn, neigh) => pn + neigh.pos.distance(centerPos),
+                0
+            ) / neighbors.length;
+
+            const betweenAngle = 2 * Math.PI / neighbors.length;
+
+            const orientAngles = [];
+            for (let i = 0; i < neighbors.length; i++) {
+                orientAngles.push(initAngle + i*betweenAngle);
+            }
+
+            const offsetVectors = orientAngles.map(
+                (angle) => polarVec(angle, avgDistanceOut)
+            );
+            return offsetVectors;
+
+        });
     }
 
     translateWhole(delta) {

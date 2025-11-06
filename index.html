@@ -5,38 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Molecule Editor</title>
 
+    <script src="dropdown.js"></script>
+    <link rel="stylesheet" href="dropdown.css">
+
     <script src="victor.js"></script>
     <script src="const.js"></script>
     <script src="atom.js"></script>
     <script src="molecule.js"></script>
     <script src="index.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: "Roboto";
+        }
+
+        button {
+            font-family: "Roboto";
+        }
+    </style>
 </head>
 <body>
     
     <div style="display: flex; flex-direction: row;">
         <canvas id="kansas" width="700" height="700"></canvas>
 
-        <div style="height: min-content; display: flex; flex-direction: row;">
-            <div style="display: flex; flex-direction: column; gap: 15px; padding: 10px;">
-                <label for="templatemolecules">Template Molecules</label>
-                <select name="templatemolecules" id="templatemolecules">
-                    <option value="h2o">H2O</option>
-                    <option value="methane">Methane</option>
-                    <option value="ethene">Ethene</option>
-                </select>
-
-                <button onclick="loadTemplateMolecule()">Load</button>
+        <div style="padding-left: 10px;">
+            <!-- Template and Download Image -->
+            <div style="height: min-content; display: flex; flex-direction: row;">
+                <div style="display: flex; flex-direction: column; gap: 15px; padding: 10px;">
+                    <div class="dropdown" id="templatemolecules">
+                        <button class="dropdownbtn" onclick="dropdown('templatemolecules')">Template Molecules</button>
+                        <p class="dropdown-display">bnrwef</p>
+                        <div class="dropdown-box">
+                            <span class="dropdown-item">H2O</span>
+                            <span class="dropdown-item">Methane</span>
+                            <span class="dropdown-item">Ethene</span>
+                            <span class="dropdown-item">Ammonia</span>
+                        </div>
+                    </div>
+    
+                    <button onclick="loadTemplateMolecule()" style="width: min-content;">Load</button>
+                </div>
+    
+                <div style="border: lightgray solid 1px; width: 0px;"></div>
+    
+                <div style="display: flex; flex-direction: column; gap: 0px; padding: 10px;">
+                    <button onclick="getCanvasImage()">Download Canvas As Image</button>
+                    <p>(for bug reporting or showcase)</p>
+                </div>
             </div>
 
-            <div style="border: lightgray solid 1px; width: 0px;"></div>
+            <div style="border: lightgray solid 1px; height: 0px; margin: 10px; margin-left: 0px; margin-right: 0px;"></div>
 
-            <div style="display: flex; flex-direction: column; gap: 0px; padding: 10px;">
-                <button onclick="getCanvasImage()">Download Canvas As Image</button>
-                <p>(for bug reporting or showcase)</p>
+            <!-- Dropdowns -->
+            <div style="height: min-content; display: flex; flex-direction: row; padding: 10px;">
+
+                <div class="dropdown" id="organizeoptions">
+                    <button class="dropdownbtn" onclick="dropdown('organizeoptions')">Organize Option</button>
+                    <div class="dropdown-box">
+                        <span class="dropdown-item">Rotate One</span>
+                        <span class="dropdown-item">Rotate All</span>
+                        <span class="dropdown-item">Equal</span>
+                        <span class="dropdown-item">Corners</span>
+                    </div>
+                </div>
+
             </div>
         </div>
 
     </div>
+
+    <script defer>
+        adddropdown('organizeoptions');
+        adddropdown('templatemolecules', true, true);
+    </script>
 
 </body>
 </html>
