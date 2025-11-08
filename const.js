@@ -137,6 +137,19 @@ function polarLerp(start, target, t, center = new Victor(0, 0), counterclockwise
     return new Victor(Math.cos(lerpangle), Math.sin(lerpangle)).multiplyScalar(lerprad).add(center);
 }
 
+function findDistance(l1, l2, p) {
+    const seg = l2.clone().subtract(l1);
+    const pointPointer = p.clone().subtract(l1);
+
+    const project = pointPointer.dot(seg) / seg.lengthSq();
+
+    if (project < 0 || project > 1) return NaN;
+
+    const parallelogramArea = Math.abs(l2.clone().subtract(l1).cross(p.clone().subtract(l1)));
+    const base = l2.clone().subtract(l1).length();
+    return parallelogramArea / base;
+};
+
 function polarVec(angle, radius) {
     return new Victor(Math.cos(angle), Math.sin(angle)).multiplyScalar(radius);
 }

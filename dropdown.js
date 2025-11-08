@@ -1,6 +1,6 @@
 const dropdowns = {};
 
-function adddropdown(nodeid, autoclose = false, display = false) {
+function adddropdown(nodeid, autoclose = false, display = false, defaultValue = '') {
     const dropdowndiv = document.getElementById(nodeid);
     const dropdownbox = dropdowndiv.querySelector('.dropdown-box');
 
@@ -23,7 +23,7 @@ function adddropdown(nodeid, autoclose = false, display = false) {
         });
     });
 
-    dropdowns[nodeid] = '';
+    dropdowns[nodeid] = defaultValue;
 }
 
 function dropdown(nodeid) {

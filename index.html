@@ -39,13 +39,13 @@
                 <div style="display: flex; flex-direction: column; gap: 15px; padding: 10px;">
                     <div class="dropdown" id="templatemolecules">
                         <button class="dropdownbtn" onclick="dropdown('templatemolecules')">Template Molecules</button>
-                        <p class="dropdown-display">Selected: none</p>
                         <div class="dropdown-box">
                             <span class="dropdown-item">H2O</span>
                             <span class="dropdown-item">Methane</span>
                             <span class="dropdown-item">Ethene</span>
                             <span class="dropdown-item">Ammonia</span>
                         </div>
+                        <p class="dropdown-display">Selected: none</p>
                     </div>
     
                     <button onclick="loadTemplateMolecule()" style="width: min-content;">Load</button>
@@ -62,11 +62,24 @@
             <div style="border: lightgray solid 1px; height: 0px; margin: 10px; margin-left: 0px; margin-right: 0px;"></div>
 
             <!-- Dropdowns -->
-            <div style="height: min-content; display: flex; flex-direction: row; padding: 10px;">
+            <div style="height: min-content; display: flex; flex-direction: row; padding: 10px; gap: 10px;">
+
+                <div class="dropdown" id="edittools" style="min-width: 150px;">
+                    <button class="dropdownbtn" onclick="dropdown('edittools')">Edit Tools</button>
+                    <div class="dropdown-box">
+                        <span class="dropdown-item">Move</span>
+                        <span class="dropdown-item">Add Atom</span>
+                        <span class="dropdown-item">Delete Atom</span>
+                        <span class="dropdown-item">Bond</span>
+                        <span class="dropdown-item">Unbond</span>
+                    </div>
+                    <p class="dropdown-display">Selected: none</p>
+                </div>
+
+                <div style="border: lightgray solid 1px; width: 0px;"></div>
 
                 <div class="dropdown" id="organizeoptions">
                     <button class="dropdownbtn" onclick="dropdown('organizeoptions')">Organize Option</button>
-                    <p class="dropdown-display">Selected: none</p>
                     <div class="dropdown-box">
                         <span class="dropdown-item">Rotate One</span>
                         <span class="dropdown-item">Rotate All</span>
@@ -74,6 +87,7 @@
                         <span class="dropdown-item">Equally Angled</span>
                         <span class="dropdown-item">T Intersection</span>
                     </div>
+                    <p class="dropdown-display">Selected: none</p>
                 </div>
 
             </div>
@@ -90,6 +104,7 @@
     <script defer>
         adddropdown('organizeoptions', true, true);
         adddropdown('templatemolecules', true, true);
+        adddropdown('edittools', true, true, 'move');
     </script>
 
 </body>

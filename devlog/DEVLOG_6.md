@@ -30,4 +30,4 @@ Now, they're objects. I'll still need to make more specific logic for unitary ca
 
 This one was short, but there'll be more.
 
-[<-- Previous Devlog](DEVLOG_5.md)<!--   [Next Devlog --\>](DEVLOG_7.md)-->
+[<-- Previous Devlog](DEVLOG_5.md)   [Next Devlog -->](DEVLOG_7.md)

@@ -99,6 +99,20 @@ function loadTemplateMolecule() {
 }
 
 
+
+let draggingAtom = -1;
+let lastMousePos = new Victor(0, 0);
+
+let bonding = false;
+let bondingAtom = -1;
+let bondingDegree = 1;
+
+let organizeStage = 'null';
+let centerId = -1;
+let anchorId = -1;
+
+let bendIndex = NaN;
+
 function runOrganize(centerId, anchorId, angle) {
     const option = dropdowns['organizeoptions'];
     if (!Object.keys(Molecule.transformFunctions).includes(option)) {
@@ -106,17 +120,12 @@ function runOrganize(centerId, anchorId, angle) {
         return;
     }
 
+    if (option === 't intersection') {
+        mol.organizeNeighbors(centerId, anchorId, angle, Molecule.transformFunctions[option], bendIndex);
+    }
+
     mol.organizeNeighbors(centerId, anchorId, angle, Molecule.transformFunctions[option]);
 }
-
-
-
-let draggingAtom = -1;
-let lastMousePos = new Victor(0, 0);
-
-let organizeStage = 'null';
-let centerId = -1;
-let anchorId = -1;
 
 function init() {
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -127,18 +136,103 @@ function init() {
         const hovereeId = mol.findHoveredAtom();
     
         if (e.button === 0) {
-    
-            if (hovereeId === undefined) {
-                console.log("Nothin!");
+
+            if (dropdowns['organizeoptions'] === 't intersection') {
+                bendIndex += 1;
+                if (bendIndex >= 2) bendIndex = -1;
             }
-            else {
-                draggingAtom = hovereeId;
-                lastMousePos = getMousePos();
-                canvas.style.cursor = 'grabbing';
-            }
+
+            if (organizeStage !== 'null') return;
+
+            const tooloption = dropdowns['edittools'];
+
+            switch (tooloption) {
+                case 'move':
+                    if (hovereeId === undefined) {
+                        console.log("Nothin!");
+                        break;
+                    }
+
+                    draggingAtom = hovereeId;
+                    lastMousePos = getMousePos();
+                    canvas.style.cursor = 'grabbing';
+                    break;
+                case 'add atom':
+                    mol.atoms.push(new Atom(atoms.hydrogen, getMousePos(), 45));
+                    break;
+                case 'delete atom':
+                    if (hovereeId === undefined) {
+                        console.log("Nothin!");
+                        break;
+                    }
+                    
+                    if (confirm('Delete selected atom?')) {
+                        const killList = [];
+                        mol.bonds.forEach((bond, i) => {
+                            if (bond.atom1 === hovereeId || bond.atom2 === hovereeId) {
+                                killList.push(i);
+                            }
+                        });
+                        killList.forEach((id, i) => mol.bonds.splice(id - i, 1));
     
+                        mol.atoms.splice(hovereeId, 1);
+                    }
+                    
+                    break;
+                case 'bond':
+                    if (hovereeId === undefined) {
+                        console.log("Nothin!");
+                        break;
+                    }
+
+                    if (!bonding) {
+                        bonding = true;
+                        bondingAtom = hovereeId;
+
+                        setDraw('bondtext', (ctx) => {
+                            ctx.save();
+                            ctx.textAlign = 'center';
+                            ctx.fillStyle = 'black';
+                            ctx.font = '30px Roboto';
+                            ctx.fillText('Choose another atom to bond with!', canvas.width / 2, 15);
+                            ctx.font = '20px Roboto';
+                            ctx.fillText('Right click to change degree of bond', canvas.width / 2, 45);
+                            ctx.fillText(`Bond degree: ${bondingDegree}`, canvas.width / 2, 75);
+                            ctx.restore();
+                        });
+                    }
+                    else {
+                        mol.createCovalentBond(bondingAtom, hovereeId, bondingDegree);
+
+                        bonding = false;
+                        bondingAtom = -1;
+                        clearDraw('bondtext');
+                    }
+
+                    break;
+                case 'unbond':
+                    const bondHoveree = mol.findHoveredBond();
+
+                    if (bondHoveree === undefined) break;
+                    
+                    if (confirm('Delete selected bond?')) {
+                        const a1 = mol.bonds[bondHoveree].atom1;
+                        const a2 = mol.bonds[bondHoveree].atom2;
+                        mol.destroyCovalentBond(a1, a2);
+                    }
+
+                    break;
+                default:
+                    break;
+            }
         }
         else if (e.button === 2) {
+
+            if (bonding) {
+                bondingDegree++;
+                if (bondingDegree > 3 || bondingDegree <= 0) bondingDegree = 1;
+                return;
+            }
 
             const orgoption = dropdowns['organizeoptions'];
     
@@ -152,6 +246,22 @@ function init() {
 
                     centerId = hovereeId;
                     organizeStage = 'setAnchor';
+
+                    if (orgoption === 't intersection') {
+                        bendIndex = 0;
+                        setDraw('organizetext', (ctx) => {
+                            ctx.save();
+                            ctx.textAlign = 'center';
+                            ctx.fillStyle = 'black';
+                            ctx.font = '30px Roboto';
+                            ctx.fillText('T Intersection', canvas.width / 2, 15);
+                            ctx.font = '20px Roboto';
+                            ctx.fillText('Left click to change location of anchor', canvas.width / 2, 45);
+                            ctx.fillText(`bend index: ${bendIndex}`, canvas.width / 2, 70);
+                            ctx.restore();
+                        });
+                    }
+
                     break;
                 case 'setAnchor':
                     if (hovereeId === undefined) {
@@ -211,9 +321,17 @@ function init() {
                     if (confirm(`Organize neighbors of atom ${centerId},\nwith anchor of atom ${anchorId},\nat a horizontal angle of ${(-angle * 180 / Math.PI).toPrecision(4+2)}º?`)) {
                         
                         clearDraw('mouseangleselect');
+                        clearDraw('organizetext');
 
                         runOrganize(centerId, anchorId, angle);
                         organizeStage = 'null';
+
+                        centerId = -1;
+                        anchorId = -1;
+
+                        if (orgoption === 't intersection') {
+                            bendIndex = NaN;
+                        }
                     }
                     break;
                 default:
@@ -267,8 +385,15 @@ document.addEventListener('keydown', (e) => {
         if (organizeStage !== 'null') {
             if (organizeStage === 'setAngle') clearDraw('mouseangleselect');
             organizeStage = 'null';
+
+            clearDraw('organizetext');
         }
-        
+
+        if (bonding) {
+            bonding = false;
+            clearDraw('bondtext');
+        }
+
     }
 });
 document.addEventListener('keyup', (e) => {
@@ -296,6 +421,9 @@ function main() {
         if (SHIFTING) {
             mol.translateOne(draggingAtom, diff);
         }
+        else if (CTRLING) {
+            mol.translateAllConnected(draggingAtom, diff);
+        }
         else {
             mol.translateWhole(diff);
         }
@@ -308,7 +436,7 @@ function main() {
     
     let bgColor = '#87b5ffff';
 
-    if (organizeStage !== 'null') bgColor = darkenColor(bgColor, 0.8);
+    if (organizeStage !== 'null' || bonding === true) bgColor = darkenColor(bgColor, 0.8);
     
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);

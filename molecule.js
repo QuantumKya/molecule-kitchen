@@ -56,13 +56,26 @@ class Molecule {
         return undefined;
     }
 
+    findHoveredBond() {
+        let foundId = 0;
+        for (const bond of this.bonds) {
+            const p1 = this.atoms[bond.atom1].pos.clone();
+            const p2 = this.atoms[bond.atom2].pos.clone();
+            const dist = findDistance(p1, p2, getMousePos());
+            if (dist <= 15) return foundId;
+            foundId++;
+        }
+        return undefined;
+    }
+
     createCovalentBond(atomId1, atomId2, degree = 1) {
         if (degree <= 0) {
             alert("Hey, there can't be a negative (or zero) covalent bond!");
             return;
         }
-        if (degree > this.atoms[atomId1].valence) {
+        if (degree > this.atoms[atomId1].valence || degree > this.atoms[atomId2].valence) {
             alert("One or more of those molecules are already full.");
+            return;
         }
         this.bonds.push({ atom1: atomId1, atom2: atomId2, degree });
     }
@@ -72,14 +85,15 @@ class Molecule {
             alert("Hey, there can't be a negative (or zero) covalent bond!");
             return;
         }
-        const bond = this.bonds.find((bond) => {
+        const bondIndex = this.bonds.findIndex((bond) => {
             return (bond.atom1 === atomId1 && bond.atom2 === atomId2);
         });
-        if (bond === undefined) {
-            alert("Uh, you're trying to break a bond that doesn't exist.");
-            alert("That sounds like it could be poetic but I can't let you do it here.");
+        if (bondIndex === -1) {
+            alert("Uh, you're trying to break a bond that doesn't exist.\nThat sounds like it could be poetic but I can't let you do it here.");
             return;
         }
+
+        const bond = this.bonds[bondIndex];
         
         if (bond.degree > degree) bond.degree -= degree;
         else if (bond.degree < degree) {
@@ -87,33 +101,32 @@ class Molecule {
             return;
         }
         else if (bond.degree === degree) {
-            this.bonds.splice(this.bonds.indexOf(bond), 1);
+            this.bonds.splice(bondIndex, 1);
         }
     }
 
-    organizeNeighbors(atomId, anchorId, initAngle, transformation) {
-        const centerPos = this.atoms[atomId].pos.clone();
-        const anchorPos = this.atoms[anchorId].pos.clone();
-
+    findNeighbors(atomId) {
         const neighborBonds = this.bonds.filter(
             (bond) => bond.atom1 === atomId || bond.atom2 === atomId
         ).map(
             (bond) => bond.atom1 === atomId ? bond : { atom1: bond.atom2, atom2: bond.atom1, degree: bond.degree }
         );
 
-        if (neighborBonds.find((bond) => bond.atom2 === anchorId) === undefined) {
-            alert("Anchor atom isn't a neighbor!");
-            return;
-        }
-        
+        const neighbors = neighborBonds.map(
+            (bond) => this.atoms[bond.atom2]
+        );
+        return neighbors;
+    }
+
+    organizeNeighbors(atomId, anchorId, initAngle, transformation, ...args) {
+        const centerPos = this.atoms[atomId].pos.clone();
+        const anchorPos = this.atoms[anchorId].pos.clone();
 
         const anchorangle = anchorPos.clone().subtract(centerPos).angle();
         const compareAnchor = clampToAngleSpace(anchorangle - initAngle);
         const ccwise = compareAnchor < 0;
-
-        const neighbors = neighborBonds.map(
-            (bond) => this.atoms[bond.atom2]
-        ).sort(
+        
+        const neighbors = this.findNeighbors(atomId).sort(
             (atomA, atomB) => {
                 const angleA = atomA.pos.clone().subtract(centerPos).angle();
                 const angleB = atomB.pos.clone().subtract(centerPos).angle();
@@ -121,13 +134,19 @@ class Molecule {
                 return angleA - angleB;
             }
         );
+        
+        if (neighbors.find((atom) => this.atoms.indexOf(atom) === anchorId) === undefined) {
+            alert("Anchor atom isn't a neighbor!");
+            return;
+        }
+        
         while (this.atoms.indexOf(neighbors[0]) !== anchorId) {
             neighbors.push(neighbors.shift());
         }
 
 
 
-        const offsetVectors = transformation.function(neighbors, initAngle, centerPos, anchorPos, this);
+        const offsetVectors = transformation.function(neighbors, initAngle, centerPos, anchorPos, this, ...args);
         if (offsetVectors.length === 0) return;
 
 
@@ -220,7 +239,7 @@ class Molecule {
         },
         't intersection': {
             needsAngle: true,
-            function: (neighbors, initAngle, centerPos) => {
+            function: (neighbors, initAngle, centerPos, anchorPos, mol, anchorside) => {
 
                 if (neighbors.length !== 3) {
                     alert("T Intersection only works with 3 atoms around the center!");
@@ -244,7 +263,19 @@ class Molecule {
     translateWhole(delta) {
         for (const atom of this.atoms) atom.pos.add(delta);
     }
+    /*
 
+    translateAllConnected(id, delta) {
+        const connectedAtoms = [];
+        for (let i = 0; i < this.atoms.length; i++) {
+            const neigh = this.findNeighbors(i);
+            const atomid = neigh.indexOf(id);
+            if (atomid !== -1) connectedAtoms.push(i);
+        }
+        for (const id of connectedAtoms) this.atoms[id].pos.add(delta);
+    }
+    
+    */
     translateOne(id, delta) {
         this.atoms[id].pos.add(delta);
     }
