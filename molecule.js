@@ -68,6 +68,13 @@ class Molecule {
         return undefined;
     }
 
+    destroyAtom(atomId) {
+        const killList = this.bonds.filter(bond => (bond.atom1 === atomId || bond.atom2 === atomId));
+        killList.forEach(bond => this.destroyCovalentBond(bond.atom1, bond.atom2, bond.degree));
+
+        this.atoms.splice(atomId, 1);
+    }
+
     createCovalentBond(atomId1, atomId2, degree = 1) {
         if (degree <= 0) {
             alert("Hey, there can't be a negative (or zero) covalent bond!");
@@ -98,7 +105,7 @@ class Molecule {
             return;
         }
         const bondIndex = this.bonds.findIndex((bond) => {
-            return (bond.atom1 === atomId1 && bond.atom2 === atomId2);
+            return (bond.atom1 === atomId1 && bond.atom2 === atomId2) || (bond.atom2 === atomId1 && bond.atom1 === atomId2);
         });
         if (bondIndex === -1) {
             alert("Uh, you're trying to break a bond that doesn't exist.\nThat sounds like it could be poetic but I can't let you do it here.");
@@ -107,12 +114,11 @@ class Molecule {
 
         const bond = this.bonds[bondIndex];
         
+        this.atoms[atomId1].valence += Math.min(degree, bond.degree);
+        this.atoms[atomId2].valence += Math.min(degree, bond.degree);
+        
         if (bond.degree > degree) bond.degree -= degree;
-        else if (bond.degree < degree) {
-            alert(`There aren't even enough bonds to delete that many! {${degree}}`);
-            return;
-        }
-        else if (bond.degree === degree) {
+        else if (bond.degree <= degree) {
             this.bonds.splice(bondIndex, 1);
         }
     }
@@ -304,5 +310,66 @@ class Molecule {
     
     translateOne(id, delta) {
         this.atoms[id].pos.add(delta);
+    }
+
+    getFormula() {
+        // get different sections
+        const sections = [];
+        this.atoms.forEach((atom, id) => {
+            if (sections.flat().includes(id)) return;
+            sections.push(this.findAllConnected(id));
+        });
+
+        // get counts per section
+        const counts = [];
+        for (const sec of sections) {
+            const cObj = {};
+            for (const aid of sec) {
+                const atom = this.atoms[aid];
+                const sym = atom.elemData.symbol;
+
+                if (cObj[sym] === undefined) cObj[sym] = 0;
+                cObj[sym]++;
+            }
+
+            counts.push(cObj);
+        }
+
+        // if no carbon, sort alphabetically
+        const kakhaga = (a, b) => {
+            if (a[0] < b[0]) return -1;
+            if (a[0] > b[0]) return 1;
+            return 0;
+        }
+
+        // if carbon present, sort organically
+        const carbon = (a, b) => {
+            // first priority — carbon
+            if (a[0] === 'C') return -1;
+            if (b[0] === 'C') return 1;
+
+            // second priority — hydrogen
+            if (a[0] === 'H') return -1;
+            if (b[0] === 'H') return 1;
+
+            // otherwise alphabetical
+            return kakhaga(a, b);
+        }
+
+        // get each part's formula
+        const sectionStrs = counts.map((cObj) => {
+            const sortedPairs = Object.entries(cObj).toSorted(
+                (Object.keys(cObj).includes('C')) ? carbon : kakhaga
+            );
+
+            const str = sortedPairs.map(pair => {
+                const s = `${pair[0]}<sub>${pair[1]}</sub>`;
+                if (pair[1] === 1) return s.split('<')[0];
+                return s;
+            }).join('');
+            return str;
+        });
+
+        return sectionStrs.join(' + ');
     }
 }

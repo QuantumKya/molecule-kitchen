@@ -41,7 +41,7 @@ function dropdown(nodeid) {
 
 function addAtomDropdown() {
     const atombox = document.getElementById('atom-dropdown-box');
-    for (const atom of Object.keys(atoms)) {
+    for (const atom of Object.keys(ATOMS)) {
         const span = document.createElement('span');
         span.className = 'dropdown-item';
         span.innerHTML = atom.charAt(0).toUpperCase() + atom.slice(1);
@@ -67,7 +67,7 @@ function atomDropdown(func) {
     const f = () => {
         func();
         atomdropdown.querySelector('.dropdown-box').childNodes.forEach((child) => {
-            child.removeEventListener('mousedown', f)
+            child.removeEventListener('mousedown', f);
         });
     }
 

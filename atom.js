@@ -4,7 +4,7 @@ class Atom {
         this.valence = element.valence;
         this.pos = position;
 
-        const idof = Object.values(atoms).indexOf(element);
+        const idof = Object.values(ATOMS).indexOf(element);
         this.radius = 45 + 10 * Number(idof > 0) + 2.5 * idof;
     }
 

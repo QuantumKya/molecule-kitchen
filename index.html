@@ -19,6 +19,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Abel&family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
     <style>
         body {
@@ -33,9 +34,10 @@
 <body>
     
     <div style="display: flex; flex-direction: row;">
-        <canvas id="kansas" width="700" height="700"></canvas>
 
-        <div style="padding-left: 10px;">
+        <canvas id="kansas"></canvas>
+
+        <div style="padding-left: 10px; max-width: 30vw;">
             <!-- Template and Download Image -->
             <div style="height: min-content; display: flex; flex-direction: row;">
                 <div style="display: flex; flex-direction: column; gap: 15px; padding: 10px;">
@@ -44,7 +46,7 @@
                         <div class="dropdown-box">
                             <span class="dropdown-item">H2O</span>
                             <span class="dropdown-item">Methane</span>
-                            <span class="dropdown-item">Ethene</span>
+                            <span class="dropdown-item">Ethylene</span>
                             <span class="dropdown-item">Ammonia</span>
                         </div>
                         <p class="dropdown-display">Selected: none</p>
@@ -109,6 +111,13 @@
             </div>
         </div>
 
+        <div style="padding-left: 10px; display: flex; flex-direction: column;">
+            <label for="chemical-formula">Chemical Formula</label>
+            <p id="chemical-formula"
+                style="margin-top: 3px; padding: 10px; background-color: #333; color: whitesmoke; border-radius: 15px; font-family: Abel; font-size: xx-large; width: max-content;"
+            ></p>
+        </div>
+
     </div>
 
     <div class="dropdown" id="atomoptions" style="position: absolute; z-index: 10; top: 0px; left: 0px;">
@@ -128,6 +137,9 @@
         adddropdown('templatemolecules', true, true);
         adddropdown('edittools', true, true, 'move');
         addAtomDropdown();
+
+        updateLeftManual();
+        updateRightManual();
     </script>
 
 </body>

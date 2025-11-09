@@ -14,4 +14,4 @@ When you select a tool, it will update the manual to the right of the canvas to 
 
 I hope you like the descriptions, and if they're not good, I can change them if you tell me on the Github repository.
 
-[<-- Previous Devlog](DEVLOG_8.md)<!--   [Next Devlog --\>](DEVLOG_10.md)-->
+[<-- Previous Devlog](DEVLOG_9.md)   [Next Devlog -->](DEVLOG_11.md)

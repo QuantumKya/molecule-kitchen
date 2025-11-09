@@ -1,8 +1,8 @@
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
-canvas.width = 700;
-canvas.height = 700;
+canvas.width = 600;
+canvas.height = 600;
 
 const canvascenter = new Victor(canvas.width / 2, canvas.height / 2);
 
@@ -21,13 +21,13 @@ function getCanvasImage() {
 }
 
 
-function ethene() {
-    const C1 = new Atom(atoms.carbon, new Victor(200, 300));
-    const C2 = new Atom(atoms.carbon, new Victor(500, 300));
-    const H11 = new Atom(atoms.hydrogen, new Victor(200, 150));
-    const H12 = new Atom(atoms.hydrogen, new Victor(200, 450));
-    const H21 = new Atom(atoms.hydrogen, new Victor(500, 150));
-    const H22 = new Atom(atoms.hydrogen, new Victor(500, 450));
+function ethylene() {
+    const C1 = new Atom(ATOMS.carbon, new Victor(200, 300));
+    const C2 = new Atom(ATOMS.carbon, new Victor(500, 300));
+    const H11 = new Atom(ATOMS.hydrogen, new Victor(200, 150));
+    const H12 = new Atom(ATOMS.hydrogen, new Victor(200, 450));
+    const H21 = new Atom(ATOMS.hydrogen, new Victor(500, 150));
+    const H22 = new Atom(ATOMS.hydrogen, new Victor(500, 450));
     
     const methane = new Molecule(C1, C2, H11, H12, H21, H22);
     methane.createCovalentBond(0, 1, 2);
@@ -45,8 +45,8 @@ function methane() {
         offsetvectors.push(polarVec(angleoff, 200));
     }
 
-    const C = new Atom(atoms.carbon, canvascenter.clone());
-    const Hs = offsetvectors.map(vec => new Atom(atoms.hydrogen, canvascenter.clone().add(vec)));
+    const C = new Atom(ATOMS.carbon, canvascenter.clone());
+    const Hs = offsetvectors.map(vec => new Atom(ATOMS.hydrogen, canvascenter.clone().add(vec)));
     
     const methane = new Molecule(C, ...Hs);
     for (let i = 0; i < 4; i++) methane.createCovalentBond(0, i+1);
@@ -60,9 +60,9 @@ function h2o() {
         return polarVec(angleoff, 200);
     });
     
-    const O = new Atom(atoms.oxygen, canvascenter);
-    const H1 = new Atom(atoms.hydrogen, canvascenter.clone().add(offsetvectors[0]));
-    const H2 = new Atom(atoms.hydrogen, canvascenter.clone().add(offsetvectors[1]));
+    const O = new Atom(ATOMS.oxygen, canvascenter);
+    const H1 = new Atom(ATOMS.hydrogen, canvascenter.clone().add(offsetvectors[0]));
+    const H2 = new Atom(ATOMS.hydrogen, canvascenter.clone().add(offsetvectors[1]));
 
     const h2o = new Molecule(O, H1, H2);
     h2o.createCovalentBond(0, 1);
@@ -77,8 +77,8 @@ function ammonia() {
         offsetvectors.push(polarVec(angleoff, 200));
     }
 
-    const N = new Atom(atoms.nitrogen, canvascenter.clone());
-    const Hs = offsetvectors.map(vec => new Atom(atoms.hydrogen, canvascenter.clone().add(vec)));
+    const N = new Atom(ATOMS.nitrogen, canvascenter.clone());
+    const Hs = offsetvectors.map(vec => new Atom(ATOMS.hydrogen, canvascenter.clone().add(vec)));
 
     const ammonia = new Molecule(N, ...Hs);
     for (let i = 0; i < 3; i++) ammonia.createCovalentBond(0, i+1);
@@ -97,6 +97,8 @@ function loadTemplateMolecule() {
 
 let draggingAtom = -1;
 let lastMousePos = new Victor(0, 0);
+
+let addingAtom = false;
 
 let bonding = false;
 let bondingAtom = -1;
@@ -154,10 +156,12 @@ function init() {
                     break;
                 case 'add atom':
                     const mp = getMousePos();
+                    addingAtom = true;
                     atomDropdown(() => {
+                        addingAtom = false;
                         const selectedAtom = dropdowns['atomoptions'];
                         if (selectedAtom !== 'none') {
-                            mol.atoms.push(new Atom(atoms[selectedAtom], getMousePos()));
+                            mol.atoms.push(new Atom(ATOMS[selectedAtom], getMousePos()));
                             [...document.querySelector('#atom-dropdown-box').children].forEach(
                                 (option) => option.classList.toggle('dropdown-item-selected', false)
                             );
@@ -171,15 +175,7 @@ function init() {
                     }
                     
                     if (confirm('Delete selected atom?')) {
-                        const killList = [];
-                        mol.bonds.forEach((bond, i) => {
-                            if (bond.atom1 === hovereeId || bond.atom2 === hovereeId) {
-                                killList.push(i);
-                            }
-                        });
-                        killList.forEach((id, i) => mol.bonds.splice(id - i, 1));
-    
-                        mol.atoms.splice(hovereeId, 1);
+                        mol.destroyAtom(hovereeId);
                     }
                     
                     break;
@@ -395,10 +391,16 @@ document.addEventListener('keydown', (e) => {
             clearDraw('bondtext');
         }
 
-        if (dropdowns['edittools'] === 'add atom') {
+        if (addingAtom && dropdowns['edittools'] === 'add atom') {
             atomDropdown(()=>{});
+            addingAtom = false;
         }
 
+    }
+
+    if (e.key === 'f') {
+        console.log(mol.getFormula());
+        document.getElementById('chemical-formula').innerHTML = mol.getFormula();
     }
 });
 document.addEventListener('keyup', (e) => {

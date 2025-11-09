@@ -14,7 +14,7 @@ let SHIFTING = false;
 let CTRLING = false;
 
 
-const atoms = {
+const ATOMS = {
     hydrogen: {
         symbol: 'H',
         valence: 1,
