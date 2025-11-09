@@ -29,10 +29,12 @@ Here are all of the devlogs I've written for this project as I've made it. I hop
 [Devlog 9 - The Axiom of Choice](./DEVLOG_9.md)
 11/8/2025
 
-[Devlog 10 - Manual Catalysis](./DEVLOG_10.md)
+[Devlog 10 - *Manual* Catalysis](./DEVLOG_10.md)
 11/8/2025
 
 [Devlog 11 - Formula Finding](./DEVLOG_11.md)
 11/9/2025
+
+[Devlog 12 - *Shortcuts* to Perfection](./DEVLOG_12.md)
 
 Happy Reading!

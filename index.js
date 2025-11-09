@@ -98,6 +98,9 @@ function loadTemplateMolecule() {
 let draggingAtom = -1;
 let lastMousePos = new Victor(0, 0);
 
+let selectingAtoms = false;
+let boxCorner = new Victor(0, 0);
+
 let addingAtom = false;
 
 let bonding = false;
@@ -124,16 +127,15 @@ function runOrganize(centerId, anchorId, angle) {
     mol.organizeNeighbors(centerId, anchorId, angle, Molecule.transformFunctions[option]);
 }
 
-function init() {
-    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-    
-    canvas.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-    
-        const hovereeId = mol.findHoveredAtom();
-    
-        if (e.button === 0) {
+canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
+canvas.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+
+    const hovereeId = mol.findHoveredAtom();
+
+    switch (e.button) {
+        case 0:
             if (dropdowns['organizeoptions'] === 't intersection') {
                 bendIndex += 1;
                 if (bendIndex >= 2) bendIndex = -1;
@@ -141,93 +143,21 @@ function init() {
 
             if (organizeStage !== 'null') return;
 
-            const tooloption = dropdowns['edittools'];
-
-            switch (tooloption) {
-                case 'move':
-                    if (hovereeId === undefined) {
-                        console.log("Nothin!");
-                        break;
-                    }
-
-                    draggingAtom = hovereeId;
-                    lastMousePos = getMousePos();
-                    canvas.style.cursor = 'grabbing';
-                    break;
-                case 'add atom':
-                    const mp = getMousePos();
-                    addingAtom = true;
-                    atomDropdown(() => {
-                        addingAtom = false;
-                        const selectedAtom = dropdowns['atomoptions'];
-                        if (selectedAtom !== 'none') {
-                            mol.atoms.push(new Atom(ATOMS[selectedAtom], getMousePos()));
-                            [...document.querySelector('#atom-dropdown-box').children].forEach(
-                                (option) => option.classList.toggle('dropdown-item-selected', false)
-                            );
-                        }
-                    });
-                    break;
-                case 'delete atom':
-                    if (hovereeId === undefined) {
-                        console.log("Nothin!");
-                        break;
-                    }
-                    
-                    if (confirm('Delete selected atom?')) {
-                        mol.destroyAtom(hovereeId);
-                    }
-                    
-                    break;
-                case 'bond':
-                    if (hovereeId === undefined) {
-                        console.log("Nothin!");
-                        break;
-                    }
-
-                    if (!bonding) {
-                        bonding = true;
-                        bondingAtom = hovereeId;
-
-                        setDraw('bondtext', (ctx) => {
-                            ctx.save();
-                            ctx.textAlign = 'center';
-                            ctx.fillStyle = 'black';
-                            ctx.font = '30px Roboto';
-                            ctx.fillText('Choose another atom to bond with!', canvas.width / 2, 15);
-                            ctx.font = '20px Roboto';
-                            ctx.fillText('Right click to change degree of bond', canvas.width / 2, 45);
-                            ctx.fillText(`Bond degree: ${bondingDegree}`, canvas.width / 2, 75);
-                            ctx.restore();
-                        });
-                    }
-                    else {
-                        mol.createCovalentBond(bondingAtom, hovereeId, bondingDegree);
-
-                        bonding = false;
-                        bondingAtom = -1;
-                        clearDraw('bondtext');
-                    }
-
-                    break;
-                case 'unbond':
-                    const bondHoveree = mol.findHoveredBond();
-
-                    if (bondHoveree === undefined) break;
-                    
-                    if (confirm('Delete selected bond?')) {
-                        const a1 = mol.bonds[bondHoveree].atom1;
-                        const a2 = mol.bonds[bondHoveree].atom2;
-                        mol.destroyCovalentBond(a1, a2);
-                    }
-
-                    break;
-                default:
-                    break;
+            if (e.shiftKey) {
+                boxCorner = getMousePos();
+                if (!selectingAtoms) selectingAtoms = true;
             }
-        }
-        else if (e.button === 2) {
 
+            if (hovereeId === undefined) {
+                console.log("Nothin!");
+                break;
+            }
+            
+            draggingAtom = hovereeId;
+            lastMousePos = getMousePos();
+            canvas.style.cursor = 'grabbing';
+            break;
+        case 2:
             if (bonding) {
                 bondingDegree++;
                 if (bondingDegree > 3 || bondingDegree <= 0) bondingDegree = 1;
@@ -235,7 +165,9 @@ function init() {
             }
 
             const orgoption = dropdowns['organizeoptions'];
-    
+
+            if (orgoption === 'none') break;
+
             switch (organizeStage) {
                 case 'null':
                     if (!orgoption) break;
@@ -274,23 +206,23 @@ function init() {
                     console.log(Molecule.transformFunctions);
                     if (Molecule.transformFunctions[orgoption].needsAngle) {
                         organizeStage = 'setAngle';
-    
+
                         setDraw('mouseangleselect', (ctx) => {
                             const mousepos = getMousePos();
                             const centerpos = mol.atoms[centerId].pos;
-    
+
                             let angle = mousepos.subtract(centerpos).angle();
                             if (SHIFTING) angle = roundToInterval(angle, Math.PI / 4);
-    
+
                             const atomrad = mol.atoms[anchorId].pos.clone().subtract(centerpos).length();
                             const projpoint = polarVec(angle, atomrad).add(centerpos);
-    
+
                             const angleradius = mol.atoms[centerId].radius + 10;
-    
+
                             ctx.save();
                             
                             ctx.globalAlpha = 0.5;
-    
+
                             ctx.strokeStyle = '#000000';
                             ctx.lineWidth = 4;
                             ctx.beginPath();
@@ -300,7 +232,7 @@ function init() {
                             ctx.moveTo(centerpos.x, centerpos.y);
                             ctx.lineTo(projpoint.x, projpoint.y);
                             ctx.stroke();
-    
+
                             ctx.restore();
                         });
                         break;
@@ -317,60 +249,56 @@ function init() {
                     let angle = mousepos.subtract(centerpos).angle();
                     if (SHIFTING) angle = roundToInterval(angle, Math.PI / 4);
 
-                    
-                    if (confirm(`Organize neighbors of atom ${centerId},\nwith anchor of atom ${anchorId},\nat a horizontal angle of ${(-angle * 180 / Math.PI).toPrecision(4+2)}º?`)) {
-                        
-                        clearDraw('mouseangleselect');
-                        clearDraw('organizetext');
+                    clearDraw('mouseangleselect');
+                    clearDraw('organizetext');
 
-                        runOrganize(centerId, anchorId, angle);
-                        organizeStage = 'null';
+                    runOrganize(centerId, anchorId, angle);
+                    organizeStage = 'null';
 
-                        centerId = -1;
-                        anchorId = -1;
+                    centerId = -1;
+                    anchorId = -1;
 
-                        if (orgoption === 't intersection') {
-                            bendIndex = NaN;
-                        }
+                    if (orgoption === 't intersection') {
+                        bendIndex = NaN;
                     }
                     break;
                 default:
                     break;
             }
-        }
-    });
+    }
+});
 
-    canvas.addEventListener('mouseup', (e) => {
-        e.preventDefault();
+canvas.addEventListener('mouseup', (e) => {
+    e.preventDefault();
     
-        const hovereeId = mol.findHoveredAtom();
+    const hovereeId = mol.findHoveredAtom();
     
-        if (e.button === 0) {
-    
-            if (dropdowns['edittools'] === 'move') {
-                draggingAtom = -1;
-                canvas.style.cursor = 'default';
-            }
-    
-        }
-    });
-    
-    canvas.addEventListener('mousemove', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const mx = e.pageX - rect.left;
-        const my = e.pageY - rect.top;
-        currentMousePos = new Victor(mx, my);
-    
-        const hovereeId = mol.findHoveredAtom();
+    if (e.button === 0) {
 
-        if (hovereeId === undefined) {
-            canvas.style.cursor = 'default';
+        if (e.shiftKey) {
+            if (selectingAtoms) selectingAtoms = false;
+            mol.findInBox(boxCorner, getMousePos());
         }
-        else if (dropdowns['edittools'] === 'move') {
-            canvas.style.cursor = 'grab';
-        }
-    });
-}
+        draggingAtom = -1;
+        canvas.style.cursor = 'default';
+    }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.pageX - rect.left;
+    const my = e.pageY - rect.top;
+    currentMousePos = new Victor(mx, my);
+
+    const hovereeId = mol.findHoveredAtom();
+
+    if (hovereeId === undefined) {
+        canvas.style.cursor = 'default';
+    }
+    else {
+        canvas.style.cursor = 'grab';
+    }
+});
 
 
 document.addEventListener('keydown', (e) => {
@@ -391,16 +319,99 @@ document.addEventListener('keydown', (e) => {
             clearDraw('bondtext');
         }
 
-        if (addingAtom && dropdowns['edittools'] === 'add atom') {
+        if (addingAtom) {
             atomDropdown(()=>{});
             addingAtom = false;
         }
 
+        mol.selectedAtoms.length = 0;
+
     }
 
-    if (e.key === 'f') {
-        console.log(mol.getFormula());
-        document.getElementById('chemical-formula').innerHTML = mol.getFormula();
+    if (organizeStage !== 'null') {
+        return;
+    }
+
+    const hovereeId = mol.findHoveredAtom();
+
+    if (e.code === 'KeyA') {
+        if (e.shiftKey) {
+            if (confirm('Delete selected atom(s)?')) {
+                if (mol.selectedAtoms.length > 0) {
+                    let i = 0;
+                    let lastId = NaN;
+                    for (const aid of mol.selectedAtoms) {
+                        if (lastId < aid) i++;
+                        mol.destroyAtom(aid - i);
+                        lastId = aid;
+                    }
+                    mol.selectedAtoms.length = 0;
+                }
+                else {
+                    if (hovereeId === undefined) {
+                        console.log("Nothin!");
+                    }
+                    else mol.destroyAtom(hovereeId);
+                }
+            }
+        }
+        else {
+            const mp = getMousePos();
+            addingAtom = true;
+            atomDropdown(() => {
+                addingAtom = false;
+                const selectedAtom = dropdowns['atomoptions'];
+                if (selectedAtom !== 'none') {
+                    mol.atoms.push(new Atom(ATOMS[selectedAtom], getMousePos()));
+                    [...document.querySelector('#atom-dropdown-box').children].forEach(
+                        (option) => option.classList.toggle('dropdown-item-selected', false)
+                    );
+                }
+            });
+        }
+    }
+    else if (e.code === 'KeyB') {
+        if (e.shiftKey) {
+            const bondHoveree = mol.findHoveredBond();
+
+            if (bondHoveree === undefined) return;
+            
+            if (confirm('Delete selected bond?')) {
+                const a1 = mol.bonds[bondHoveree].atom1;
+                const a2 = mol.bonds[bondHoveree].atom2;
+                mol.destroyCovalentBond(a1, a2);
+            }
+        }
+        else {
+            if (hovereeId === undefined) {
+                console.log("Nothin!");
+                return;
+            }
+
+            if (!bonding) {
+                bonding = true;
+                bondingAtom = hovereeId;
+
+                setDraw('bondtext', (ctx) => {
+                    ctx.save();
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = 'black';
+                    ctx.font = '30px Roboto';
+                    ctx.fillText('Choose another atom to bond with!', canvas.width / 2, 15);
+                    ctx.font = '20px Roboto';
+                    ctx.fillText('Right click to change degree of bond', canvas.width / 2, 45);
+                    ctx.fillText(`Bond degree: ${bondingDegree}`, canvas.width / 2, 75);
+                    ctx.restore();
+                });
+            }
+            else {
+                mol.createCovalentBond(bondingAtom, hovereeId, bondingDegree);
+
+                bonding = false;
+                bondingAtom = -1;
+                clearDraw('bondtext');
+            }
+        }
     }
 });
 document.addEventListener('keyup', (e) => {
@@ -417,6 +428,11 @@ function clearDraw(name) {
     delete drawInstructions[name];
 }
 
+function updateFormula() {
+    console.log(mol.getFormula());
+    document.getElementById('chemical-formula').innerHTML = mol.getFormula();
+}
+
 function main() {
     // Update ---------------------------------------------------
 
@@ -428,15 +444,13 @@ function main() {
         if (SHIFTING) {
             mol.translateOne(draggingAtom, diff);
         }
-        else if (CTRLING) {
-            mol.translateWhole(diff);
-        }
         else {
             mol.translateAllConnected(draggingAtom, diff);
         }
         lastMousePos = getMousePos();
     }
 
+    updateFormula();
 
 
     // Draw ----------------------------------------------------
@@ -449,6 +463,15 @@ function main() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     mol.draw(ctx);
+
+    if (selectingAtoms) {
+        ctx.save();
+        ctx.globalAlpha = 0.6;
+        ctx.fillStyle = '#444444';
+        const mp = getMousePos();
+        ctx.fillRect(boxCorner.x, boxCorner.y, mp.x - boxCorner.x, mp.y - boxCorner.y);
+        ctx.restore();
+    }
 
     for (const drawfunc of Object.values(drawInstructions)) drawfunc(ctx);
 
@@ -472,5 +495,5 @@ function run() {
 }
 
 
-init();
+updateFormula();
 run();

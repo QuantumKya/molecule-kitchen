@@ -2,6 +2,8 @@ class Molecule {
     constructor(...atoms) {
         this.atoms = atoms;
         this.bonds = [];
+
+        this.selectedAtoms = [];
     }
     
     update() {
@@ -43,7 +45,21 @@ class Molecule {
             ctx.stroke();
             ctx.restore();
         }
-        for (const atom of this.atoms.toReversed()) atom.draw(ctx);
+        for (let i = 0; i < this.atoms.length; i++) {
+            const atom = this.atoms[i];
+
+            atom.draw(ctx);
+
+            if (this.selectedAtoms.includes(i)) {
+                ctx.save();
+                ctx.globalAlpha = 0.6;
+                ctx.fillStyle = '#2252ffff';
+                ctx.beginPath();
+                ctx.arc(atom.pos.x, atom.pos.y, atom.radius, 0, 360);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
     }
 
 
@@ -153,8 +169,29 @@ class Molecule {
             predicate = sampleAtoms.reduce((pc, aid) => pc || !allConnected.includes(aid), false);
         }
 
-        console.log(allConnected);
         return allConnected;
+    }
+
+    findInBox(c1, c2) {
+        this.selectedAtoms.length = 0;
+        for (let i = 0; i < this.atoms.length; i++) {
+            const p = this.atoms[i].pos;
+            const r = this.atoms[i].radius;
+
+            const clt = new Victor(Math.min(c1.x, c2.x), Math.min(c1.y, c2.y));
+            const cbr = new Victor(Math.max(c1.x, c2.x), Math.max(c1.y, c2.y));
+
+            const pad = 1.75/3*r;
+
+            if (
+                p.x + pad >= clt.x &&
+                p.x - pad <= cbr.x &&
+                p.y + pad >= clt.y &&
+                p.y - pad <= cbr.y
+            ) {
+                this.selectedAtoms.push(i);
+            }
+        }
     }
 
     organizeNeighbors(atomId, anchorId, initAngle, transformation, ...args) {

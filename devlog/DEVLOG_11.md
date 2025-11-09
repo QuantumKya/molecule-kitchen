@@ -81,9 +81,11 @@ const sectionStrs = counts.map((cObj) => {
 });
 ```
 
+Now, pressing F will show you your chemical formula.
+
 <br>
 <br>
 
 I hope that wasn't too much code to look at... See you next time!
 
-[<-- Previous Devlog](DEVLOG_10.md)<!--   [Next Devlog --\>](DEVLOG_12.md)-->
+[<-- Previous Devlog](DEVLOG_10.md)   [Next Devlog -->](DEVLOG_12.md)

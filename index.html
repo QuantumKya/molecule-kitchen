@@ -35,7 +35,7 @@
     
     <div style="display: flex; flex-direction: row;">
 
-        <canvas id="kansas"></canvas>
+        <canvas id="kansas" style="align-self: flex-start;"></canvas>
 
         <div style="padding-left: 10px; max-width: 30vw;">
             <!-- Template and Download Image -->
@@ -68,20 +68,6 @@
             <!-- Dropdowns -->
             <div style="height: min-content; display: flex; flex-direction: row; padding: 10px; gap: 10px;">
 
-                <div class="dropdown" id="edittools" style="min-width: 150px;">
-                    <button class="dropdownbtn" onclick="dropdown('edittools')">Edit Tools</button>
-                    <div class="dropdown-box">
-                        <span class="dropdown-item">Move</span>
-                        <span class="dropdown-item">Add Atom</span>
-                        <span class="dropdown-item">Delete Atom</span>
-                        <span class="dropdown-item">Bond</span>
-                        <span class="dropdown-item">Unbond</span>
-                    </div>
-                    <p class="dropdown-display">Selected: none</p>
-                </div>
-
-                <div style="border: lightgray solid 1px; width: 0px;"></div>
-
                 <div class="dropdown" id="organizeoptions">
                     <button class="dropdownbtn" onclick="dropdown('organizeoptions')">Organize Option</button>
                     <div class="dropdown-box">
@@ -99,8 +85,11 @@
             <div style="border: lightgray solid 1px; height: 0px; margin: 10px; margin-left: 0px; margin-right: 0px;"></div>
 
             <div id="editmanual" class="manual" style="height: min-content; padding: 10px; gap: 10px;">
-                <h2>Left Click</h2>
-                <p></p>
+                <h2>Editing Shortcuts</h2>
+                <p><b>A</b> — create atom</p>
+                <p><b>Shift + A</b> — delete atom(s)</p>
+                <p><b>B</b> — create bond</p>
+                <p><b>Shift + B</b> — delete bond</p>
             </div>
 
             <div style="border: lightgray solid 1px; height: 0px; margin: 10px; margin-left: 0px; margin-right: 0px;"></div>
@@ -135,10 +124,8 @@
     <script defer>
         adddropdown('organizeoptions', true, true);
         adddropdown('templatemolecules', true, true);
-        adddropdown('edittools', true, true, 'move');
         addAtomDropdown();
-
-        updateLeftManual();
+        
         updateRightManual();
     </script>
 
