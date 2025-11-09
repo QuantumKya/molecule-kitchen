@@ -64,7 +64,14 @@ function atomDropdown(func) {
     
     atomdropdown.querySelector('button').click();
 
+    const f = () => {
+        func();
+        atomdropdown.querySelector('.dropdown-box').childNodes.forEach((child) => {
+            child.removeEventListener('mousedown', f)
+        });
+    }
+
     atomdropdown.querySelector('.dropdown-box').childNodes.forEach((child) => {
-        child.addEventListener('mousedown', func, { once: true });
+        child.addEventListener('mousedown', f);
     });
 }
