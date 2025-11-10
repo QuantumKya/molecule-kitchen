@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Molecule Editor</title>
 
+    <link rel="stylesheet" href="main.css">
+
     <script src="dropdown.js"></script>
     <link rel="stylesheet" href="dropdown.css">
     <script src="manual.js"></script>
@@ -37,7 +39,7 @@
 
         <canvas id="kansas" style="align-self: flex-start;"></canvas>
 
-        <div style="padding-left: 10px; max-width: 30vw;">
+        <div style="padding-left: 10px; max-width: 60vw;">
             <!-- Template and Download Image -->
             <div style="height: min-content; display: flex; flex-direction: row;">
                 <div style="display: flex; flex-direction: column; gap: 15px; padding: 10px;">
@@ -84,27 +86,30 @@
 
             <div style="border: lightgray solid 1px; height: 0px; margin: 10px; margin-left: 0px; margin-right: 0px;"></div>
 
-            <div id="editmanual" class="manual" style="height: min-content; padding: 10px; gap: 10px;">
-                <h2>Editing Shortcuts</h2>
-                <p><b>A</b> — create atom</p>
-                <p><b>Shift + A</b> — delete atom(s)</p>
-                <p><b>B</b> — create bond</p>
-                <p><b>Shift + B</b> — delete bond</p>
+            <div style="height: min-content; display: flex; flex-direction: row; padding: 10px; gap: 10px;">
+
+                <div id="editmanual" class="manual" style="height: min-content; padding: 10px;">
+                    <h2>Editing Shortcuts</h2>
+                    <p><b>A</b> — create atom</p>
+                    <p><b>Shift + A</b> — delete atom(s)</p>
+                    <p><b>B</b> — create bond</p>
+                    <p><b>Shift + B</b> — delete bond</p>
+                </div>
+
+                <div style="padding-left: 10px; display: flex; flex-direction: column;">
+                    <label for="chemical-formula">Chemical Formula</label>
+                    <p id="chemical-formula"></p>
+                    <p style="margin-top: -25px; font-size: small;">click to copy</p>
+                </div>
+
             </div>
 
             <div style="border: lightgray solid 1px; height: 0px; margin: 10px; margin-left: 0px; margin-right: 0px;"></div>
 
-            <div id="organizemanual" class="manual" style="height: min-content; padding: 10px; gap: 10px;">
+            <div id="organizemanual" class="manual" style="height: min-content; padding: 10px;">
                 <h2>Right Click</h2>
                 <p></p>
             </div>
-        </div>
-
-        <div style="padding-left: 10px; display: flex; flex-direction: column;">
-            <label for="chemical-formula">Chemical Formula</label>
-            <p id="chemical-formula"
-                style="margin-top: 3px; padding: 10px; background-color: #333; color: whitesmoke; border-radius: 15px; font-family: Abel; font-size: xx-large; width: max-content;"
-            ></p>
         </div>
 
     </div>

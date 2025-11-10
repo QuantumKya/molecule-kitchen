@@ -27,7 +27,7 @@ class Molecule {
                 const offsetwidth = 20;
                 
                 const direction = pos2.clone().subtract(pos1).normalize();
-                const normal = direction.clone().rotateBy(Math.PI / 2);
+                const normal = direction.clone().rotate(-Math.PI / 2);
 
                 for (let i = 0; i < bond.degree; i++) {
                     const offset = (i - (bond.degree - 1) / 2) * offsetwidth;

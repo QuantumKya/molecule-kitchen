@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d');
 canvas.width = 600;
 canvas.height = 600;
 
-const canvascenter = new Victor(canvas.width / 2, canvas.height / 2);
+const ccenter = new Victor(canvas.width / 2, canvas.height / 2);
 
 function getCanvasImage() {
     const data = canvas.toDataURL('image/png');
@@ -22,12 +22,12 @@ function getCanvasImage() {
 
 
 function ethylene() {
-    const C1 = new Atom(ATOMS.carbon, new Victor(200, 300));
-    const C2 = new Atom(ATOMS.carbon, new Victor(500, 300));
-    const H11 = new Atom(ATOMS.hydrogen, new Victor(200, 150));
-    const H12 = new Atom(ATOMS.hydrogen, new Victor(200, 450));
-    const H21 = new Atom(ATOMS.hydrogen, new Victor(500, 150));
-    const H22 = new Atom(ATOMS.hydrogen, new Victor(500, 450));
+    const C1 = new Atom(ATOMS.carbon, new Victor(ccenter.x - 100, ccenter.y));
+    const C2 = new Atom(ATOMS.carbon, new Victor(ccenter.x + 100, ccenter.y));
+    const H11 = new Atom(ATOMS.hydrogen, new Victor(ccenter.x - 150, ccenter.y - 150));
+    const H12 = new Atom(ATOMS.hydrogen, new Victor(ccenter.x - 150, ccenter.y + 150));
+    const H21 = new Atom(ATOMS.hydrogen, new Victor(ccenter.x + 150, ccenter.y - 150));
+    const H22 = new Atom(ATOMS.hydrogen, new Victor(ccenter.x + 150, ccenter.y + 150));
     
     const methane = new Molecule(C1, C2, H11, H12, H21, H22);
     methane.createCovalentBond(0, 1, 2);
@@ -45,8 +45,8 @@ function methane() {
         offsetvectors.push(polarVec(angleoff, 200));
     }
 
-    const C = new Atom(ATOMS.carbon, canvascenter.clone());
-    const Hs = offsetvectors.map(vec => new Atom(ATOMS.hydrogen, canvascenter.clone().add(vec)));
+    const C = new Atom(ATOMS.carbon, ccenter.clone());
+    const Hs = offsetvectors.map(vec => new Atom(ATOMS.hydrogen, ccenter.clone().add(vec)));
     
     const methane = new Molecule(C, ...Hs);
     for (let i = 0; i < 4; i++) methane.createCovalentBond(0, i+1);
@@ -60,9 +60,9 @@ function h2o() {
         return polarVec(angleoff, 200);
     });
     
-    const O = new Atom(ATOMS.oxygen, canvascenter);
-    const H1 = new Atom(ATOMS.hydrogen, canvascenter.clone().add(offsetvectors[0]));
-    const H2 = new Atom(ATOMS.hydrogen, canvascenter.clone().add(offsetvectors[1]));
+    const O = new Atom(ATOMS.oxygen, ccenter);
+    const H1 = new Atom(ATOMS.hydrogen, ccenter.clone().add(offsetvectors[0]));
+    const H2 = new Atom(ATOMS.hydrogen, ccenter.clone().add(offsetvectors[1]));
 
     const h2o = new Molecule(O, H1, H2);
     h2o.createCovalentBond(0, 1);
@@ -77,8 +77,8 @@ function ammonia() {
         offsetvectors.push(polarVec(angleoff, 200));
     }
 
-    const N = new Atom(ATOMS.nitrogen, canvascenter.clone());
-    const Hs = offsetvectors.map(vec => new Atom(ATOMS.hydrogen, canvascenter.clone().add(vec)));
+    const N = new Atom(ATOMS.nitrogen, ccenter.clone());
+    const Hs = offsetvectors.map(vec => new Atom(ATOMS.hydrogen, ccenter.clone().add(vec)));
 
     const ammonia = new Molecule(N, ...Hs);
     for (let i = 0; i < 3; i++) ammonia.createCovalentBond(0, i+1);
@@ -419,6 +419,15 @@ document.addEventListener('keyup', (e) => {
     if (e.key === 'Control') CTRLING = false;
 });
 
+const formulaholder = document.getElementById('chemical-formula');
+formulaholder.addEventListener('click', (e) => {
+    formulaholder.parentElement.querySelectorAll('p')[1].innerHTML = 'Copied!';
+    setTimeout(() => formulaholder.parentElement.querySelectorAll('p')[1].innerHTML = 'Click to copy', 1500);
+    
+    const str = formulaholder.innerHTML.replace(/<(.*?)>/g, '');
+    navigator.clipboard.writeText(str);
+});
+
 
 let drawInstructions = {};
 function setDraw(name, drawFunc) {
@@ -441,7 +450,7 @@ function main() {
     if (draggingAtom !== -1) {
         const diff = getMousePos().subtract(lastMousePos);
 
-        if (SHIFTING) {
+        if (CTRLING) {
             mol.translateOne(draggingAtom, diff);
         }
         else {

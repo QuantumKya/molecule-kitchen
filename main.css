@@ -1,0 +1,27 @@
+#chemical-formula {
+    margin-top: 3px;
+    padding: 10px;
+    
+    border-radius: 15px;
+    
+    background-color: #333;
+    color: whitesmoke;
+    
+    font-family: Abel;
+    font-size: xx-large;
+    user-select: none;
+
+    width: max-content;
+    max-width: 150px;
+
+    transition-duration: 200ms;
+}
+
+#chemical-formula:hover {
+    background-color: #555;
+}
+
+.formula-copied {
+    background-color: #fff42b;
+    color: #333;
+}
