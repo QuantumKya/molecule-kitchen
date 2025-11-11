@@ -94,6 +94,50 @@ function loadTemplateMolecule() {
 }
 
 
+// undo/redo stuff
+
+function cloneMolecule(molecule) {
+    const mAtoms = molecule.atoms.map((a) => {
+        const newA = new Atom(a.elemData, a.pos);
+        newA.valence = a.valence;
+        return newA;
+    });
+
+    const m = new Molecule(...mAtoms);
+    for (const bond of molecule.bonds) m.createCovalentBond(bond.atom1, bond.atom2, bond.degree);
+    return m;
+}
+
+const stateBuffer = [cloneMolecule(mol)];
+let stateBack = 0;
+
+function updateState() {
+    const backMol = stateBuffer.at(-(stateBack+1));
+    mol = backMol;
+}
+
+function undo() {
+    if (stateBack + 1 > stateBuffer.length) return;
+    stateBack++;
+    updateState();
+}
+
+function redo() {
+    if (stateBack < 1) return;
+    stateBack--;
+    updateState();
+}
+
+function saveChange() {
+    if (stateBack > 0) {
+        stateBuffer.splice(stateBuffer.length - (stateBack+1));
+        stateBack = 0;
+    }
+    stateBuffer.push(cloneMolecule(mol));
+    updateState();
+}
+
+
 
 let draggingAtom = -1;
 let lastMousePos = new Victor(0, 0);
@@ -332,6 +376,19 @@ document.addEventListener('keydown', (e) => {
         return;
     }
 
+    if (e.code === 'KeyZ' && e.ctrlKey) {
+        if (e.shiftKey) {
+            redo();
+            return;
+        }
+        undo();
+        return;
+    }
+    else if ((e.code === 'KeyY' && e.ctrlKey)) {
+        redo();
+        return;
+    }
+
     const hovereeId = mol.findHoveredAtom();
 
     if (e.code === 'KeyA') {
@@ -346,12 +403,17 @@ document.addEventListener('keydown', (e) => {
                         lastId = aid;
                     }
                     mol.selectedAtoms.length = 0;
+                    saveChange();
                 }
                 else {
                     if (hovereeId === undefined) {
                         console.log("Nothin!");
+                        return;
                     }
-                    else mol.destroyAtom(hovereeId);
+                    else {
+                        mol.destroyAtom(hovereeId);
+                        saveChange();
+                    }
                 }
             }
         }
@@ -366,6 +428,7 @@ document.addEventListener('keydown', (e) => {
                     [...document.querySelector('#atom-dropdown-box').children].forEach(
                         (option) => option.classList.toggle('dropdown-item-selected', false)
                     );
+                    saveChange();
                 }
             });
         }
@@ -380,6 +443,7 @@ document.addEventListener('keydown', (e) => {
                 const a1 = mol.bonds[bondHoveree].atom1;
                 const a2 = mol.bonds[bondHoveree].atom2;
                 mol.destroyCovalentBond(a1, a2);
+                saveChange();
             }
         }
         else {
@@ -410,6 +474,8 @@ document.addEventListener('keydown', (e) => {
                 bonding = false;
                 bondingAtom = -1;
                 clearDraw('bondtext');
+
+                saveChange();
             }
         }
     }

@@ -32,6 +32,18 @@
             font-family: "Roboto";
         }
     </style>
+
+    <script>
+        window.onerror = (event, source, lineno, colno, error) => {
+            const msg = `
+            File: ${source},
+            Line ${lineno}, Column ${colno},
+            Error: ${error}
+            `;
+
+            alert(msg);
+        };
+    </script>
 </head>
 <body>
     
