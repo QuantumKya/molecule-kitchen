@@ -59,3 +59,9 @@ function saveChange() {
 }
 ```
 
+<br>
+<br>
+
+Have fun making mistakes!
+
+[<-- Previous Devlog](DEVLOG_12.md)<!--   [Next Devlog --\>](DEVLOG_13.md)-->

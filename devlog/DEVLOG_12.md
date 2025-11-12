@@ -22,4 +22,4 @@ I will rectify this tedium by introducing...
 
 Hopefully editing will be more manageable with these. Lexically transmit to you next time!
 
-[<-- Previous Devlog](DEVLOG_11.md)<!--   [Next Devlog --\>](DEVLOG_13.md)-->
+[<-- Previous Devlog](DEVLOG_11.md)   [Next Devlog -->](DEVLOG_13.md)
