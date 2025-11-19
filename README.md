@@ -1,18 +1,35 @@
 # Molecule Kitchen
-by QuantumKya
+by QuantumKya for Hack Club's Axiom YSWS
 
-A sandbox where you can construct molecules. Place atoms and bond them together!
+<br>
 
-## Current features
-- adding and removing atoms
-- making and breaking covalent bonds
-- changing the orientation of atoms
-- atom selection
+A sandbox where you can construct molecules. Place atoms and bond them together, covalently or ionically!
+
+See the chemical formula of your molecule at any time.
+
+Load one of a few template molecules hard-coded in by me (suggest other template molecules if you want!)
+
+Share your molecules with others! Save as an image or as a loadable molecule file (.mkf or .json)
+
+Choose light or dark mode, your preference will be saved locally.
+
+<br>
+
+Check out [the devlogs](devlog/DEVLOGS.md), which catalogue pretty much everything I did as I made the project!
+
 
 
 ## Controls
 |  | Left Click | A | B | Right Click |
 |---|---|---|---|---|
-| Normal | Move molecule | Add atom | Create covalent bond | Organize atom (dropdown settings) |
-| Shift | Select area | Delete atom | Delete covalent bond | N/A |
-| Control | Move one atom at a time | N/A | N/A | N/A |
+| Normal | Move molecule | Create atom | Create bond | Organize atoms |
+| Shift | Select atoms | Delete atom | Delete bond | N/A |
+| Control | Move one atom (or selected atoms) | N/A | N/A | N/A |
+
+The controls are also displayed on the site, in the dashboard.
+
+
+## Currently Missing Features
+- most elements of the periodic table... (sorry)
+- copy and paste
+- functional groups
