@@ -1,0 +1,67 @@
+#periodic_table {
+    width: 100%;
+    min-width: 600px;
+}
+
+#periodic_table > div {
+    margin-bottom: 2.5%;
+}
+
+#periodic_table > div > div {
+	width: 5.5%;
+	display: inline-block;
+	margin-right: -7px;
+}
+
+#periodic_table > div > div > div {
+    border: 3px solid black;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    text-align: center;
+    background: gray;
+    margin-top: -3px;
+    padding: 20% 0 20% 0;
+
+    user-select: none;
+}
+
+#periodic_table .alkali {
+    background: rgb(255, 89, 80);
+}
+
+#periodic_table .alkaline {
+    background: rgb(183, 60, 53);
+}
+
+#periodic_table .reactive-nm {
+    background: darkslateblue;
+}
+
+#periodic_table .metals {
+    color: white;
+    background: #3232ff;
+}
+
+#periodic_table .pt-metals {
+    background: darkolivegreen;
+}
+
+#periodic_table .metalloids {
+    background: rgb(136, 113, 100);
+}
+
+#periodic_table .noble {
+    color: black;
+    background: rgb(235, 177, 186)
+}
+
+#lanth-act > div > div:first-child {
+    color: black;
+    background: rgb(144, 238, 144);
+}
+
+#lanth-act > div > div:last-child {
+    color: black;
+    background: rgb(151, 202, 121);
+}

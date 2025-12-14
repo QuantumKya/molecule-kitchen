@@ -6,8 +6,15 @@ class Atom {
 
         this.charge = 0;
 
-        const idof = Object.values(ELEMENTS).indexOf(element);
-        this.radius = 45 + 10 * Number(idof > 0) + 2.5 * idof;
+        let e = element.number;
+        let count = 0;
+        for (const size of shells) {
+            e -= size;
+            count++;
+            if (e < 0) break;
+        }
+        this.radius = 45 + 7.5 * count;
+        if (element.symbol === 'H') this.radius = 40;
     }
 
     draw(ctx) {

@@ -59,4 +59,7 @@ Here are all of the devlogs I've written for this project as I've made it. I hop
 
 Turned in to Axiom v1!!!
 
+[Devlog 19 - Axiom V2](./DEVLOG_19.md)  
+12/13/2025
+
 Happy Reading!

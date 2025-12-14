@@ -86,4 +86,4 @@ I have no clue what to do to finish this feature, and that's where it stands as 
 
 But, yeah, there's 3 hours wasted.
 
-[<-- Previous Devlog](DEVLOG_17.md)<!--   [Next Devlog --\>](DEVLOG_19.md)-->
+[<-- Previous Devlog](DEVLOG_17.md)   [Next Devlog -->](DEVLOG_19.md)

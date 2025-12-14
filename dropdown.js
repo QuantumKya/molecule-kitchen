@@ -51,34 +51,46 @@ function setDropdown(nodeid, value) {
     );
 }
 
-function addAtomDropdown() {
-    const atombox = document.getElementById('atom-dropdown-box');
-    for (const atom of Object.keys(ELEMENTS)) {
-        const span = document.createElement('span');
-        span.className = 'dropdown-item';
-        span.innerHTML = toTitle(atom);
-        atombox.appendChild(span);
+function closePeriodicTable() {
+    const ptable = document.getElementById('periodic_table');
+    ptable.style.display = 'none';
+}
+
+function openPeriodicTable() {
+    const ptable = document.getElementById('periodic_table');
+    ptable.style.display = 'block';
+}
+
+function initPeriodicTable() {
+    const ptable = document.getElementById('periodic_table');
+    for (const divpp of ptable.querySelectorAll('div')) {
+        for (const divp of divpp.querySelectorAll('div')) {
+            for (const div of divp.querySelectorAll('div')) {
+                const element = Object.entries(ELEMENTS).find(el => el[1].symbol === div.innerHTML);
+                if (!element) continue;
+
+                div.addEventListener('click', e => {
+                    if (e.button === 0) {
+                        dropdowns['atomoptions'] = element[0];
+                        addAtomFromDropdown();
+                        closePeriodicTable();
+                    }
+                });
+            }
+        }
     }
 
-    adddropdown('atomoptions', true, false);
+    dropdowns['atomoptions'] = 'none';
 }
 
 
-const atomDropdownHandler = (e) => {
+const addAtomFromDropdown = (e) => {
     addingAtom = false;
     const selectedAtom = dropdowns['atomoptions'];
     if (selectedAtom !== 'none') {
         mol.atoms.push(new Atom(ELEMENTS[selectedAtom], getMousePos()));
-        [...document.querySelector('#atom-dropdown-box').children].forEach(
-            (option) => option.classList.toggle('dropdown-item-selected', false)
-        );
         saveChange();
     }
-
-    const atomdropdown = document.getElementById('atomoptions');
-    atomdropdown.querySelector('.dropdown-box').childNodes.forEach((child) => {
-        child.removeEventListener('mousedown', atomDropdownHandler);
-    });
 }
 
 function atomDropdown() {
@@ -93,17 +105,4 @@ function atomDropdown() {
     atomdropdown.style.top = `${y}px`;
     
     atomdropdown.querySelector('button').click();
-
-
-    atomdropdown.querySelector('.dropdown-box').childNodes.forEach((child) => {
-        child.addEventListener('mousedown', atomDropdownHandler, { once: true });
-    });
-}
-
-function cancelAtomDropdown() {
-    const atomdropdown = document.getElementById('atomoptions');
-    atomdropdown.querySelector('button').click();
-    atomdropdown.querySelector('.dropdown-box').childNodes.forEach((child) => {
-        child.removeEventListener('mousedown', atomDropdownHandler);
-    });
 }

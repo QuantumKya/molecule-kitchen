@@ -414,7 +414,7 @@ document.addEventListener('keydown', (e) => {
         }
 
         if (addingAtom) {
-            cancelAtomDropdown();
+            closePeriodicTable();
             addingAtom = false;
         }
 
@@ -460,7 +460,7 @@ document.addEventListener('keydown', (e) => {
             if (addingAtom) return;
 
             addingAtom = true;
-            atomDropdown(addingAtom, mol);
+            atomDropdown();
         }
     }
     else if (e.code === 'KeyB') {
@@ -514,6 +514,8 @@ document.addEventListener('keydown', (e) => {
                 });
             }
             else {
+                if (hovereeId === bondingAtom) return;
+
                 if (bondingType === 'covalent') mol.createCovalentBond(bondingAtom, hovereeId, bondingDegree);
                 else if (bondingType === 'ionic') mol.createIonicBond(bondingAtom, hovereeId, bondingDegree);
 

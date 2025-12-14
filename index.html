@@ -6,6 +6,7 @@
     <title>Molecule Kitchen</title>
 
     <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="pd.css">
 
     <script src="dropdown.js"></script>
     <link rel="stylesheet" href="dropdown.css">
@@ -198,9 +199,207 @@
     </div>
 
     <div class="dropdown" id="atomoptions" style="position: absolute; z-index: 10; top: 0px; left: 0px;">
-        <button class="dropdownbtn" onclick="dropdown('atomoptions')" style="display: none;">Atom Options</button>
-        <div class="dropdown-box" id="atom-dropdown-box">
-        </div>
+        <button class="dropdownbtn" onclick="openPeriodicTable()" style="display: none;">Atom Options</button>
+        <section style="margin-top: 35px; width: fit-content; display: none;" id="periodic_table">
+            <div>
+                <div>
+                    <div class="reactive-nm">H</div>
+                    <div class="alkali">Li</div>
+                    <div class="alkali">Na</div>
+                    <div class="alkali">K</div>
+                    <div class="alkali">Rb</div>
+                    <div class="alkali">Cs</div>
+                    <div class="alkali">Fr</div>
+                </div>
+                <div>
+                    <div class="alkaline">Be</div>
+                    <div class="alkaline">Mg</div>
+                    <div class="alkaline">Ca</div>
+                    <div class="alkaline">Sr</div>
+                    <div class="alkaline">Ba</div>
+                    <div class="alkaline">Ra</div>
+                </div>
+                <div>
+                    <div class="metals">Sc</div>
+                    <div class="metals">Y</div>
+                    <div style="opacity: 0;">X</div>
+                    <div style="opacity: 0;">X</div>
+                </div>
+                <div>
+                    <div class="metals">Ti</div>
+                    <div class="metals">Zr</div>
+                    <div class="metals">Hf</div>
+                    <div class="metals">Rf</div>
+                </div>
+                <div>
+                    <div class="metals">V</div>
+                    <div class="metals">Nb</div>
+                    <div class="metals">Ta</div>
+                    <div class="metals">Db</div>
+                </div>
+                <div>
+                    <div class="metals">Cr</div>
+                    <div class="metals">Mo</div>
+                    <div class="metals">W</div>
+                    <div class="metals">Sg</div>
+                </div>
+                <div>
+                    <div class="metals">Mn</div>
+                    <div class="metals">Tc</div>
+                    <div class="metals">Re</div>
+                    <div class="metals">Bh</div>
+                </div>
+                <div>
+                    <div class="metals">Fe</div>
+                    <div class="metals">Ru</div>
+                    <div class="metals">Os</div>
+                    <div class="metals">Hs</div>
+                </div>
+                <div>
+                    <div class="metals">Co</div>
+                    <div class="metals">Rh</div>
+                    <div class="metals">Ir</div>
+                    <div>Mt</div>
+                </div>
+                <div>
+                    <div class="metals">Ni</div>
+                    <div class="metals">Pd</div>
+                    <div class="metals">Pt</div>
+                    <div>Ds</div>
+                </div>
+                <div>
+                    <div class="metals">Cu</div>
+                    <div class="metals">Ag</div>
+                    <div class="metals">Au</div>
+                    <div>Rg</div>
+                </div>
+                <div>
+                    <div class="metals">Zn</div>
+                    <div class="metals">Cd</div>
+                    <div class="metals">Hg</div>
+                    <div>Cn</div>
+                </div>
+                <div>
+                    <div class="metalloids">B</div>
+                    <div class="pt-metals">Al</div>
+                    <div class="pt-metals">Ga</div>
+                    <div class="pt-metals">In</div>
+                    <div class="pt-metals">Ti</div>
+                    <div>Nh</div>
+                </div>
+                <div>
+                    <div class="reactive-nm">C</div>
+                    <div class="metalloids">Si</div>
+                    <div class="metalloids">Ge</div>
+                    <div class="pt-metals">Sn</div>
+                    <div class="pt-metals">Rb</div>
+                    <div>Fl</div> 
+                </div>
+                <div>
+                    <div class="reactive-nm">N</div>
+                    <div class="reactive-nm">P</div>
+                    <div class="metalloids">As</div>
+                    <div class="metalloids">Sb</div>
+                    <div class="pt-metals">Bi</div>
+                    <div>Mc</div>
+                </div>
+                <div>
+                    <div class="reactive-nm">O</div>
+                    <div class="reactive-nm">S</div>
+                    <div class="reactive-nm">Se</div>
+                    <div class="metalloids">Te</div>
+                    <div class="pt-metals">Po</div>
+                    <div>Lv</div>
+                </div>
+                <div>
+                    <div class="reactive-nm">F</div>
+                    <div class="reactive-nm">Cl</div>
+                    <div class="reactive-nm">Br</div>
+                    <div class="reactive-nm">I</div>
+                    <div class="pt-metals">At</div>
+                    <div>Ts</div>
+                </div>
+                <div>
+                    <div class="noble">He</div>
+                    <div class="noble">Ne</div>
+                    <div class="noble">Ar</div>
+                    <div class="noble">Kr</div>
+                    <div class="noble">Xe</div>
+                    <div class="noble">Rn</div>
+                    <div>Og</div>
+                </div>
+            </div>
+            <div id="lanth-act">
+                <div>
+                    <div style="opacity: 0;">X</div>
+                    <div style="opacity: 0;">X</div>
+                </div>
+                <div>
+                    <div style="opacity: 0;">X</div>
+                    <div style="opacity: 0;">X</div>
+                </div>
+                <div>
+                    <div>La</div>
+                    <div>Ac</div>
+                </div>
+                <div>
+                    <div>Ce</div>
+                    <div>Th</div>
+                </div>
+                <div>
+                    <div>Pr</div>
+                    <div>Pa</div>
+                </div>
+                <div>
+                    <div>Nd</div>
+                    <div>U</div>
+                </div>
+                <div>
+                    <div>Pm</div>
+                    <div>Np</div>
+                </div>
+                <div>
+                    <div>Sm</div>
+                    <div>Pu</div>
+                </div>
+                <div>
+                    <div>Eu</div>
+                    <div>Am</div>
+                </div>
+                <div>
+                    <div>Gd</div>
+                    <div>Cm</div>
+                </div>
+                <div>
+                    <div>Tb</div>
+                    <div>Bk</div>
+                </div>
+                <div>
+                    <div>Dy</div>
+                    <div>Cf</div>
+                </div>
+                <div>
+                    <div>Ho</div>
+                    <div>Es</div>
+                </div>
+                <div>
+                    <div>Er</div>
+                    <div>Fm</div>
+                </div>
+                <div>
+                    <div>Tm</div>
+                    <div>Md</div>
+                </div>
+                <div>
+                    <div>No</div>
+                    <div>Lr</div>
+                </div>
+                <div>
+                    <div>La</div>
+                    <div>Ac</div>
+                </div>
+            </div>
+        </section>
     </div>
 
 
@@ -208,9 +407,9 @@
         adddropdown('organizeoptions', true, true, 'rotate one');
         adddropdown('templatemolecules', false, true, 'h2o');
         adddropdown('lightdark', false, false, 'system');
-        addAtomDropdown();
         
         updateRightManual();
+        initPeriodicTable();
     </script>
 
 </body>

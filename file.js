@@ -42,7 +42,7 @@ function encodeMolecule(molecule) {
     
     for (const atom of molecule.atoms) {
         const sym = atom.elemData.symbol;
-        const pos = `${String(atom.pos.x)},${String(atom.pos.y)}`;
+        const pos = `${String(Math.fround(atom.pos.x))},${String(Math.fround(atom.pos.y))}`;
         
         dataString += `${sym}${pos}`;
     }
@@ -92,7 +92,7 @@ function encodeMoleculeJSON(molecule) {
     for (const atom of molecule.atoms) {
         molData.atoms.push({
             symbol: atom.elemData.symbol,
-            position: { x: atom.pos.x, y: atom.pos.y }
+            position: { x: Math.fround(atom.pos.x), y: Math.fround(atom.pos.y) }
         });
     }
 

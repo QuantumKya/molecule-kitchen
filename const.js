@@ -18,51 +18,98 @@ let CTRLING = false;
 
 
 
+const shells = [2, 8, 8, 18, 18, 32, 32];
+
 const ELEMENTS = {
     hydrogen: {
+        number: 1,
         symbol: 'H',
         valence: 1,
         color: '#ffffff',
     },
     carbon: {
+        number: 6,
         symbol: 'C',
         valence: 4,
         color: '#505050',
     },
     nitrogen: {
+        number: 7,
         symbol: 'N',
         valence: 3,
-        color: '#3434d5ff',
+        color: '#3434d5',
     },
     oxygen: {
+        number: 8,
         symbol: 'O',
         valence: 2,
-        color: '#ba0909ff',
+        color: '#ba0909',
     },
     sodium: {
+        number: 11,
         symbol: 'Na',
         valence: 1,
     },
     phosphorus: {
+        number: 15,
         symbol: 'P',
         valence: 3,
         color: '#c18f2c',
     },
     sulfur: {
+        number: 16,
         symbol: 'S',
         valence: 2,
-        color: '#ecd800ff',
+        color: '#ecd800',
     },
     chlorine: {
+        number: 17,
         symbol: 'Cl',
         valence: 1,
-        color: '#00e980ff',
+        color: '#00e980',
     },
     potassium: {
+        number: 19,
         symbol: 'K',
         valence: 1,
         color: '#cecece',
     },
+    helium: {
+        number: 2,
+        symbol: 'He',
+        valence: 0,
+        color: '#ffeded'
+    },
+    lithium: {
+        number: 3,
+        symbol: 'Li',
+        valence: 1,
+        color: '#ecb394'
+    },
+    beryllium: {
+        number: 4,
+        symbol: 'Be',
+        valence: 2,
+        color: '#938a7e'
+    },
+    boron: {
+        number: 5,
+        symbol: 'B',
+        valence: 3,
+        color: '#987a5b'
+    },
+    flourine: {
+        number: 9,
+        symbol: 'F',
+        valence: 1,
+        color: '#b7faff'
+    },
+    neon: {
+        number: 10,
+        symbol: 'Ne',
+        valence: 0,
+        color: '#4be791'
+    }
 };
 
 function getElement(symbol) {
