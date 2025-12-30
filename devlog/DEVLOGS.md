@@ -63,4 +63,7 @@ Turned in to Axiom v1!!!
 [Devlog 19 - Axiom V2](./DEVLOG_19.md)  
 12/13/2025
 
+[Devlog 20 - Analysis Catalysis](./DEVLOG_20.md)  
+12/29/2025
+
 Happy Reading!
