@@ -9,7 +9,7 @@ See the chemical formula of your molecule at any time.
 
 Load one of a few template molecules hard-coded in by me (suggest other template molecules if you want!)
 
-Share your molecules with others! Save as an image or as a loadable molecule file (.mkf or .json)
+Share your molecules with others! Save as an image or as a loadable molecule file (.molecule or .json)
 
 Choose light or dark mode, your preference will be saved locally.
 
@@ -30,6 +30,4 @@ The controls are also displayed on the site, in the dashboard.
 
 
 ## Currently Missing Features
-- most elements of the periodic table... (sorry)
 - copy and paste
-- functional groups
