@@ -1,6 +1,10 @@
+let activeAnimations = [];
+
 class Molecule {
     constructor(...atoms) {
+        /** @type {Array<Atom>} */
         this.atoms = atoms;
+        /** @type {Array<{type: string, atom1: number, atom2: number, degree: number}>} */
         this.bonds = [];
         this.ionizations = atoms.map(a=>0);
 
@@ -151,16 +155,18 @@ class Molecule {
 
     destroyAtom(atomId) {
         this.destroyBondsOf(atomId);
+
         this.atoms.splice(atomId, 1);
         this.ionizations.splice(atomId, 1);
+        this.bonds.forEach((b, i) => {
+            b.atom1 -= (b.atom1 > atomId);
+            b.atom2 -= (b.atom2 > atomId);
+        });
     }
 
     destroyAtoms(...atomIds) {
-        for (const atomId of atomIds) this.destroyBondsOf(atomId);
-        for (const atomId of atomIds.sort((a,b)=>b-a)) {
-            this.atoms.splice(atomId, 1);
-            this.ionizations.splice(atomId, 1);
-        }
+        for (const atomId of atomIds.sort((a,b)=>b-a))
+            this.destroyAtom(atomId);
     }
 
     createBond(type, atom1, atom2, degree) {
@@ -276,13 +282,11 @@ class Molecule {
 
     findNeighborIndices(atomId) {
         const neighborBonds = this.bonds.filter(
-            (bond) => bond.atom1 === atomId || bond.atom2 === atomId
-        ).map(
-            (bond) => bond.atom1 === atomId ? bond : { type: bond.type, atom1: bond.atom2, atom2: bond.atom1, degree: bond.degree }
+            bond => bond.atom1 === atomId || bond.atom2 === atomId
         );
 
         const neighbors = neighborBonds.map(
-            (bond) => bond.atom2
+            bond => bond.atom1 === atomId ? bond.atom2 : bond.atom1
         );
         return neighbors;
     }
@@ -394,7 +398,7 @@ class Molecule {
 
         const moveAnimation = () => {
             const framesElapsed = getCurrentFrame() - startFrame;
-            const lerprogress = framesElapsed / animDuration;
+            const lerprogress = Math.min(1, framesElapsed / animDuration);
 
             neighbors.forEach((neigh, i) => {
                 const thisconnected = connected[i];
@@ -408,14 +412,15 @@ class Molecule {
                 neighbors.forEach((neigh, i) => {
                     neigh.pos = targetPositions[i].clone();
                 });
+                return true; // done with animation
             }
-            else requestAnimationFrame(moveAnimation);
+            return false; // not done yet
         };
-        moveAnimation();
+        activeAnimations.push(moveAnimation);
     }
 
     static transformFunctions = {
-        'rotate one': {
+        'rotate_one': {
             needsAngle: true,
             function: (neighbors, initAngle, centerPos, anchorPos, mol) => {
 
@@ -428,7 +433,7 @@ class Molecule {
 
             }
         },
-        'rotate all': {
+        'rotate_all': {
             needsAngle: true,
             function: (neighbors, initAngle, centerPos, anchorPos) => {
 
@@ -444,7 +449,7 @@ class Molecule {
 
             }
         },
-        'same distance': {
+        'same_distance': {
             needsAngle: false,
             function: (neighbors, initAngle, centerPos, anchorPos) => {
 
@@ -457,7 +462,7 @@ class Molecule {
 
             }
         },
-        'equally angled': {
+        'equally_angled': {
             needsAngle: true,
             function: (neighbors, initAngle, centerPos) => {
 
@@ -475,7 +480,7 @@ class Molecule {
 
             }
         },
-        't intersection': {
+        't_intersection': {
             needsAngle: true,
             function: (neighbors, initAngle, centerPos, anchorPos, mol, anchorside) => {
 
@@ -499,19 +504,23 @@ class Molecule {
 
     translateWhole(delta) {
         for (const atom of this.atoms) atom.pos.add(delta);
+        saveChange();
     }
 
     translateAllConnected(id, delta) {
         const connectedAtoms = this.findAllConnected(id);
         for (const id of connectedAtoms) this.atoms[id].pos.add(delta);
+        saveChange();
     }
     
     translateOne(id, delta) {
         this.atoms[id].pos.add(delta);
+        saveChange();
     }
 
     translateSome(delta, ...ids) {
         for (const id of ids) this.atoms[id].pos.add(delta);
+        saveChange();
     }
 
     getFormula() {
@@ -812,7 +821,7 @@ class Molecule {
             if (highlightees == '') continue;
 
             matches.push(name);
-            allatoms.push(...highlightees);
+            allatoms.push(highlightees);
         }
 
         return { groups: matches, atoms: allatoms };
