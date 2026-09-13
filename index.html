@@ -8,20 +8,25 @@
     <link rel="stylesheet" href="main.css">
     <link rel="stylesheet" href="pd.css">
     <link rel="stylesheet" href="tutorial.css">
-
-    <script src="dropdown.js"></script>
+    
+    
+    <script src="utils/victor.js"></script>
+    <script src="utils/const.js"></script>
+    <script src="utils/mouse_and_keys.js"></script>
+    <script src="utils/text_utils.js"></script>
+    <script src="utils/math_utils.js"></script>
+    <script src="utils/dropdown.js"></script>
     <link rel="stylesheet" href="dropdown.css">
+    
+    <script src="class/atom.js"></script>
+    <script src="class/molecule.js"></script>
+    <script src="class/molecule2d.js"></script>
+    
+    
     <script src="manual.js"></script>
-
-    <script src="victor.js"></script>
-    <script src="const.js"></script>
-    <script src="atom.js"></script>
-    <script src="molecule.js"></script>
-    
-    <script src="file.js" defer></script>
-    
     <script src="tutorial.js"></script>
     <script src="template_molecules.js"></script>
+    <script src="file.js" defer></script>
     
     <script src="index.js" defer></script>
     
@@ -174,7 +179,7 @@
                         <p class="dropdown-display">Selected: none</p>
                     </div>
 
-                    <p style="padding: 0; margin: 0; font-size: small;">Snap to discrete angles by holding Shift while choosing the angle.</p>
+                    <p style="padding: 0; margin: 0; font-size: small;">Hold Shift to snap when using rotation tools.</p>
 
                 </div>
                 
@@ -227,6 +232,7 @@
 
     <div id="tutorialpanel" style="display: none; transition: 300ms ease-in;"></div>
 
+    <!-- Periodic Table Menu -->
     <div class="dropdown" id="atomoptions" style="position: absolute; z-index: 10; top: 0px; left: 0px;">
         <button class="dropdownbtn" onclick="openPeriodicTable()" style="display: none;">Atom Options</button>
         <section style="width: fit-content; display: none;" id="periodic_table">
@@ -321,7 +327,7 @@
                     <div class="metalloids">Si</div>
                     <div class="metalloids">Ge</div>
                     <div class="pt-metals">Sn</div>
-                    <div class="pt-metals">Rb</div>
+                    <div class="pt-metals">Pb</div>
                     <div>Fl</div> 
                 </div>
                 <div>

@@ -1,5 +1,4 @@
 # Devlogs - Molecule Kitchen
-### Timeline
 
 Here are all of the devlogs I've written for this project as I've made it. I hope you like them!
 
@@ -60,10 +59,32 @@ Here are all of the devlogs I've written for this project as I've made it. I hop
 Turned in to Axiom v1!!!  
 11/18/2025 - 10:54 P.M. CST
 
+<hr>
+
 [Devlog 19 - Axiom V2](./DEVLOG_19.md)  
 12/13/2025
 
 [Devlog 20 - Analysis Catalysis](./DEVLOG_20.md)  
 12/29/2025
 
-Happy Reading!
+[Devlog 21 - Chemistry Class](./DEVLOG_19.md)  
+12/13/2025
+
+[Devlog 22 - Polishing Up](./DEVLOG_20.md)  
+12/29/2025
+
+Turned in to Axiom v2!!!  
+12/31/2025 - 11:59 P.M. CST
+
+<hr>
+
+Fixed a bunch of big problems that made things nearly unusable, yet had gone unnoticed for months because nobody ever tried out the website lol  
+5/16/2026
+
+<hr>
+
+Came back and started adding more stuff!  
+9/11/2026
+
+[Devlog 23 - In 3-D](./DEVLOG_23.md)  
+9/11/2026

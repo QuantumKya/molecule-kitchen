@@ -79,11 +79,10 @@ I created a new object called `ionizations` that the molecule keeps track of. It
 ### More Elements!!!
 
 I added a bunch of elements to the available ones! The ones I added were...
-- 
 
 <br>
 <br>
 
 The site's looking really good now, and I can't think of any other big issues as of writing this! See you next time! If there is one...
 
-[<-- Previous Devlog](DEVLOG_21.md)<!--   [Next Devlog --\>](DEVLOG_23.md)-->
+[<-- Previous Devlog](DEVLOG_21.md)   [Next Devlog -->](DEVLOG_23.md)

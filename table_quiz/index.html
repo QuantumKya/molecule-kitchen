@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Periodic Table Quiz</title>
+
+    <script src="index.js" defer></script>
+
+    <script src="../utils/const.js"></script>
+    <script src="../utils/text_utils.js"></script>
+
+    <style>
+        @font-face {
+            font-family: 'Helvetica Neue';
+            src: url('../fonts/helvetica-neue/HelveticaNeueBlack.otf') format('otf');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+
+            font-family: 'Helvetica Neue', sans-serif;
+        }
+        * {
+            box-sizing: border-box;
+        }
+
+        #main {
+            width: 100vw;
+            height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+        #element-card {
+            position: relative;
+
+            width: 7.5cm;
+            height: 7.5cm;
+            border: 5px gray solid;
+            background-color: antiquewhite;
+        }
+
+        #element-card input {
+            padding: 1%;
+            outline: none;
+            border: none;
+            background: transparent;
+
+            font-family: 'Helvetica Neue', sans-serif;
+            color: black;
+        }
+
+        #element-card p {
+            margin: 0;
+            padding: 1%;
+            font-size: 135%;
+        }
+
+        #element-card #symbol-input {
+            width: 3ch;
+            text-align: center;
+            
+            position: absolute;
+            font-size: 8.5cqi;
+            left: 50%;
+            top: 50%;
+            translate: -50% -50%;
+        }
+
+        #element-card #number-input {
+            width: 3.5ch;
+            text-align: left;
+
+            position: absolute;
+            font-size: 2.5cqi;
+            left: 1%;
+            top: 1%;
+        }
+
+        #element-card #name-input {
+            width: 10ch;
+            text-align: center;
+            
+            position: absolute;
+            font-size: 2.5cqi;
+            left: 50%;
+            bottom: 5%;
+            translate: -50% 0;
+        }
+
+        #element-card #mass {
+            position: absolute;
+            right: 1%;
+            top: 1%;
+        }
+
+        
+
+        button {
+            border: 1px solid #8888ee;
+            outline: none;
+            padding: 0.5ch;
+            padding-left: 0.75ch;
+            padding-right: 0.75ch;
+            border-radius: 0.25ch;
+            
+            background-color: #f2f2ff;
+            font-family: 'Helvetica Neue', sans-serif;
+            font-size: 125%;
+        }
+        button:hover {
+            background-color: #eaeaff;
+        }
+        button:disabled {
+            background-color: #dedef0;
+        }
+
+        #hint {
+            display: flex;
+            flex-direction: column;
+        }
+        #next-skip {
+            display: flex;
+            gap: 10%;
+
+            margin-top: 1.5vh;
+            justify-content: center;
+        }
+
+        #btn-reveal {
+            margin-top: 1.5vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <div id="element-box">
+            <div id="element-card">
+                <input type="text" name="" id="symbol-input">
+                <input type="text" name="" id="number-input">
+                <input type="text" name="" id="name-input">
+                <p id="mass" style="opacity: 0;">[294]</p>
+            </div>
+            
+            <div id="element-facts">
+                <p id="isotopes"></p>
+                <p id="color"></p>
+                <p id="appearances"></p>
+            </div>
+        </div>
+
+        <div id="hint">
+            <div id="next-skip">
+                <button id="btn-next" onclick="newGuess(currentMode)">Next</button>
+                <button id="btn-skip" onclick="newGuess(currentMode)">Skip</button>
+            </div>
+            <button id="btn-reveal" onclick="revealAnswer(true)">Reveal</button>
+        </div>
+    </div>
+
+    <script defer>
+        newGuess(currentMode);
+    </script>
+</body>
+</html>

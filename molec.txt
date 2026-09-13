@@ -1,7 +1,0 @@
-Sulfuric Acid (H2SO4)
-Carbonic Acid (H2CO3)
-Carbon Dioxide (CO2)
-Sodium Bicarbonate (NaHCO3)
-Methanol (CH3OH)
-Acetic Acid (Ch3COOH)
-Chloroform (CHCl3)

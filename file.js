@@ -12,7 +12,7 @@ moleculeinput.onchange = (e) => {
             const fileContents = e.target.result;
             switch (file.name.split('.').pop().toLowerCase()) {
                 case 'json':
-                    mol = decodeMoleculeJSON(fileContents);
+                    mol = cloneMolecule(decodeMoleculeJSON(fileContents));
                     saveChange();
                     break;
                 case 'molecule':
@@ -140,9 +140,4 @@ function saveTextToFile(data, filename) {
     URL.revokeObjectURL(url);
 
     workSaved = true;
-}
-
-function truncateToDecimals(num, decimals) {
-    const factor = Math.pow(10, decimals);
-    return Math.trunc(num * factor) / factor;
 }

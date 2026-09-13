@@ -1,3 +1,8 @@
+const CANVASWIDTH = 850;
+const CANVASHEIGHT = 850;
+const CANVASSIZE = new Victor(CANVASWIDTH, CANVASHEIGHT);
+const BONDWIDTH = 10;
+
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
@@ -22,12 +27,12 @@ function getCanvasImage() {
 
 
 
-let mol = water();
+let mol = Mol2D.from(water());
 
 function loadTemplateMolecule() {
     const newmolecule = dropdowns['templatemolecules'];
     if (!newmolecule) return;
-    eval(`mol = ${newmolecule}();`);
+    eval(`mol = Mol2D.from(${newmolecule}());`);
     saveChange();
 }
 
@@ -42,25 +47,11 @@ window.addEventListener('beforeunload', e => {
     e.returnValue = '';
 });
 
-function cloneMolecule(molecule) {
-    const mAtoms = molecule.atoms.map((a) => {
-        const newA = new Atom(a.elemData, new Victor(a.pos.x, a.pos.y));
-        return newA;
-    });
-
-    const m = new Molecule(...mAtoms);
-    for (const bond of molecule.bonds) {
-        m.createBond(bond.type, bond.atom1, bond.atom2, bond.degree);
-    }
-    for (const [aidStr, charge] of Object.entries(molecule.ionizations)) m.ionize(Number(aidStr), charge);
-    return m;
-}
-
-const stateBuffer = [cloneMolecule(mol)];
+const stateBuffer = [cloneMolecule2D(mol)];
 let stateIndex = 0;
 
 function updateState() {
-    mol = cloneMolecule(stateBuffer[stateIndex]);
+    mol = cloneMolecule2D(stateBuffer[stateIndex]);
     workSaved = false;
 }
 
@@ -78,7 +69,7 @@ function redo() {
 
 function saveChange() {
     stateBuffer.splice(stateIndex+1)
-    stateBuffer.push(cloneMolecule(mol));
+    stateBuffer.push(cloneMolecule2D(mol));
     stateIndex = stateBuffer.length - 1;
     updateState();
 }
@@ -106,16 +97,16 @@ let bendIndex = NaN;
 
 function runOrganize(centerId, anchorId, angle) {
     const option = dropdowns['organizeoptions'];
-    if (!Object.keys(Molecule.transformFunctions).includes(option)) {
+    if (!Object.keys(Mol2D.transformFunctions).includes(option)) {
         alert('Yo that is not a thing that is in the dropdown, how did you get that?!');
         return;
     }
 
     if (option === 't_intersection') {
-        mol.organizeNeighbors(centerId, anchorId, angle, Molecule.transformFunctions[option], bendIndex);
+        mol.organizeNeighbors(centerId, anchorId, angle, Mol2D.transformFunctions[option], bendIndex);
     }
 
-    mol.organizeNeighbors(centerId, anchorId, angle, Molecule.transformFunctions[option]);
+    mol.organizeNeighbors(centerId, anchorId, angle, Mol2D.transformFunctions[option]);
 }
 
 canvas.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -213,7 +204,7 @@ canvas.addEventListener('mousedown', (e) => {
                         break;
                     }
 
-                    if (Molecule.transformFunctions[orgoption].needsAngle) {
+                    if (Mol2D.transformFunctions[orgoption].needsAngle) {
                         organizeStage = 'setAngle';
 
                         setDraw('mouseangleselect', (ctx) => {
@@ -519,7 +510,7 @@ themeselection.childNodes.forEach(node => {
 function clearMolecule() {
     if (!confirm('Clear everything?')) return;
 
-    mol = new Molecule();
+    mol = new Mol2D();
     saveChange();
     workSaved = true;
 }
