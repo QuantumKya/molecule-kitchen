@@ -40,6 +40,8 @@ function newGuess(which) {
     document.getElementById('main').style.backgroundColor = '#ffffff';
     document.getElementById('btn-next').disabled = true;
     document.getElementById('btn-reveal').disabled = false;
+
+    inputlist[whichId].focus();
 }
 
 function revealAnswer(skipped) {
@@ -55,9 +57,13 @@ function revealAnswer(skipped) {
     document.getElementById('main').style.backgroundColor = skipped ? '#ebadb3' : '#adebb3';
     document.getElementById('btn-next').disabled = false;
     document.getElementById('btn-reveal').disabled = true;
+    
+    document.getElementById('btn-next').focus();
 }
 
 inputlist.forEach((inp, i) => inp.addEventListener('input', e => {
     if (targetId !== i) return;
     if (inp.value.toLowerCase() === targetStr.toLowerCase()) revealAnswer(false);
 }));
+
+newGuess(currentMode);
