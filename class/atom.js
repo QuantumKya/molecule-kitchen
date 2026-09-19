@@ -1,60 +1,75 @@
 class Atom {
-    constructor(element, position = new Victor(0, 0)) {
-        this.elemData = element;
-        this.valence = element.valence;
-        this.pos = position;
+    /** @param {number|string|object} element @param {Victor | Victor3} position */
+    constructor(element, position) {
+        const el = getElement(element);
+        if (!el) return;
+        const atomicNumber = el.number;
 
+        this.protons = atomicNumber;
+        this.neutrons = atomicNumber; // implement ACTUAL isotopes later
+        this.electrons = atomicNumber;
         this.charge = 0;
-
-        let e = element.number;
-        let count = 0;
-        for (const size of shells) {
-            e -= size;
-            count++;
-            if (e <= 0) break;
-        }
-        this.radius = 42.5 + 7.5 * count;
-        if (element.symbol === 'H') this.radius = 40;
+        
+        this.pos = position;
     }
 
-    draw(ctx) {
-        this.drawFromColor(ctx, this.elemData.color ?? '#888888');
+    get atomicNumber() { return this.protons; }
+    get elemData() { return getElement(this.protons); }
+
+    /**
+     * The difference in electrons of this atom from its neutral state.
+     * Used for determining electron-happiness and ionization forms.
+     */
+    get valenceCharge() { return this.protons - this.electrons; }
+
+    get symbol() {
+        const chargeNum = toSuperscript(Math.abs(this.charge).toString());
+
+        let sym = this.elemData.symbol;
+        sym += ['', '⁺', '⁻'].at(Math.sign(this.charge));
+        if (Math.abs(this.charge) > 1) sym += chargeNum;
+
+        return sym;
     }
 
-    drawUnhighlighted(ctx) {
-        this.drawFromColor(ctx, darkenColor(this.elemData.color ?? '#888888', 0.8));
+    share(amount) {
+        if (amount <= 0) return;
+        this.electrons += amount;
     }
-
-    drawFromColor(ctx, color) {
-        this.drawSuperCustom(ctx, color, this.pos);
+    /**
+     * Gives the atom a certain number of electrons.
+     * Takes electrons away if `amount < 0`.
+     * @param {number} amount 
+     */
+    ionize(amount) {
+        this.electrons += amount;
+        this.charge -= amount;
     }
+    give(amount) { this.ionize(amount); }
+    take(amount) { this.ionize(-amount); }
+}
 
-    drawFromPos(ctx, position) {
-        this.drawSuperCustom(ctx, this.elemData.color ?? '#888888', position);
-    }
-
-    drawSuperCustom(ctx, color, position) {
-        const TEXTSIZE = 70;
-        const clr = color;
-
-        ctx.fillStyle = clr;
-        ctx.strokeStyle = 'black';
-        ctx.strokeWidth = 3;
-        ctx.beginPath();
-        ctx.arc(position.x, position.y, this.radius, 0, 360);
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.fillStyle = getTextColorFromBG(clr);
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = `${TEXTSIZE*this.radius/75}px Arial`;
-
-        const chargeNum = Array.from(String(Math.abs(this.charge)), Number).map(n=>superscriptMap[n]).join('');
-        ctx.fillText(this.elemData.symbol + ['', '⁺', '⁻'].at(Math.sign(this.charge)) + (Math.abs(this.charge) > 1 ? chargeNum : ''), position.x, position.y);
-    }
-
-    checkIfMouseHover() {
-        return (getMousePos().distanceSq(this.pos) < this.radius * this.radius);
-    }
+/** @param {Atom} atom @returns {Atom} */
+function cloneAtomOnto(atom, objatom) {
+    objatom.ionize(-atom.charge);
+    objatom.share(atom.valenceCharge + atom.charge);
+    return objatom;
+}
+/** @param {Atom} atom @returns {Atom} */
+function cloneAtom(atom) {
+    const a = new Atom(atom.protons, new Victor(atom.pos.x, atom.pos.y));
+    cloneAtomOnto(atom, a);
+    return a;
+}
+/** @param {Atom} atom @returns {Atom2D} */
+function cloneAtom2D(atom) {
+    const a = new Atom2D(atom.protons, new Victor(atom.pos.x, atom.pos.y));
+    cloneAtomOnto(atom, a);
+    return a;
+}
+/** @param {Atom} atom @returns {Atom3D} */
+function cloneAtom3D(atom) {
+    const a = new Atom3D(atom.protons, new Victor(atom.pos.x, atom.pos.y));
+    cloneAtomOnto(atom, a);
+    return a;
 }

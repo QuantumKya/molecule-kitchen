@@ -11,6 +11,7 @@
     
     
     <script src="utils/victor.js"></script>
+    <script src="utils/victor3.js"></script>
     <script src="utils/const.js"></script>
     <script src="utils/mouse_and_keys.js"></script>
     <script src="utils/text_utils.js"></script>
@@ -18,7 +19,9 @@
     <script src="utils/dropdown.js"></script>
     <link rel="stylesheet" href="dropdown.css">
     
+    <script src="class/molec_utils.js"></script>
     <script src="class/atom.js"></script>
+    <script src="class/atom2d.js"></script>
     <script src="class/molecule.js"></script>
     <script src="class/molecule2d.js"></script>
     
@@ -95,6 +98,9 @@
                     <label for="chemical-formula" style="width: 100%;">Chemical Formula</label>
                     <p id="chemical-formula"></p>
                     <p style="margin-top: -25px; font-size: small;">click to copy</p>
+
+                    <br>
+                    <p id="chemical-name"></p>
                 </div>
 
                 <!-- <div class="vborder"></div>
@@ -438,7 +444,7 @@
     </div>
 
 
-    <script defer>
+    <script type="module">
         adddropdown('organizeoptions', true, true, 'rotate_one');
         adddropdown('templatemolecules', true, true, 'water');
         adddropdown('lightdark', false, false, 'system');

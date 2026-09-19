@@ -95,6 +95,71 @@ let anchorId = -1;
 
 let bendIndex = NaN;
 
+
+
+/* ------------------------ Periodic Table Menu ------------------------ */
+
+function closePeriodicTable() {
+    const ptable = document.getElementById('periodic_table');
+    ptable.style.display = 'none';
+}
+
+function openPeriodicTable() {
+    const ptable = document.getElementById('periodic_table');
+    ptable.style.display = 'block';
+}
+
+function initPeriodicTable() {
+    const ptable = document.getElementById('periodic_table');
+    for (const divpp of ptable.querySelectorAll('div')) {
+        for (const divp of divpp.querySelectorAll('div')) {
+            for (const div of divp.querySelectorAll('div')) {
+                const element = getElement(div.textContent);
+                if (!element) continue;
+
+                div.addEventListener('click', e => {
+                    if (e.button === 0) {
+                        mol.atoms.push(new Atom(div.textContent, getMousePos()));
+                        addingAtom = false;
+                        saveChange();
+                        closePeriodicTable();
+                    }
+                });
+            }
+        }
+    }
+
+    dropdowns['atomoptions'] = 'none';
+}
+
+
+const addAtomFromDropdown = (e) => {
+    addingAtom = false;
+    const selectedAtom = dropdowns['atomoptions'];
+    if (selectedAtom !== 'none') {
+        mol.atoms.push(new Atom(selectedAtom, getMousePos()));
+        saveChange();
+    }
+}
+
+function atomDropdown() {
+    const atomdropdown = document.getElementById('atomoptions');
+    const canvas = document.querySelector('canvas').getBoundingClientRect();
+    
+    const mp = getMousePos().clone().divide(CANVASSIZE).multiply(new Victor(canvas.width, canvas.height));
+    const x = mp.x + canvas.left;
+    const y = mp.y + canvas.top;
+    
+    atomdropdown.style.left = `${x}px`;
+    atomdropdown.style.top = `${y}px`;
+    
+    atomdropdown.querySelector('button').click();
+}
+
+
+
+/* ------------------------ Editing & Input ------------------------ */
+
 function runOrganize(centerId, anchorId, angle) {
     const option = dropdowns['organizeoptions'];
     if (!Object.keys(Mol2D.transformFunctions).includes(option)) {
@@ -388,9 +453,7 @@ document.addEventListener('keydown', (e) => {
             saveChange();
             return;
         }
-        else {
-            if (addingAtom) return;
-
+        else if (!addingAtom) {
             addingAtom = true;
             atomDropdown();
         }
@@ -482,6 +545,13 @@ document.addEventListener('keydown', (e) => {
         else mol.reduce(hovereeId);
         saveChange();
     }
+    else if (e.code === 'KeyF') {
+        const bondHoveree = mol.findHoveredBond();
+        if (bondHoveree === undefined) return;
+
+        mol.flipBond(bondHoveree);
+        saveChange();
+    }
 });
 document.addEventListener('keyup', (e) => {
     if (e.key === 'Shift') SHIFTING = false;
@@ -526,6 +596,7 @@ function clearDraw(name) {
 
 function updateFormula() {
     document.getElementById('chemical-formula').innerHTML = mol.getFormula();
+    document.getElementById('chemical-name').innerHTML = mol.getName();
 }
 
 

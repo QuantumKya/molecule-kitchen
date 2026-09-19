@@ -1,15 +1,34 @@
 class Mol2D extends Molecule {
+    /** @param {...Atom} atoms */
+    constructor(...atoms) {
+        super(...(atoms.map(cloneAtom2D)));
+        
+        /** @type {Array<Atom2D>} */
+        this.atoms;
+    }
+
     /** @param {Molecule} mol @returns {Mol2D} */
     static from(mol) { return cloneMolecule2D(mol); }
+    
+    /** @param {Atom} a */
+    addAtom(a) {
+        this.atoms.push(cloneAtom2D(a));
+    }
+
+    update() {
+        
+    }
 
     draw(ctx) {
-        const shakecheck = (a) => (a.elemData.valence >= 0) ? (a.valence > a.elemData.valence || a.valence < 0) : (a.valence < a.elemData.valence || a.valence > 0);
+        const shakecheck = (aid) =>
+            !this.atoms[aid].elemData.valences
+            .includes(this.atoms[aid].valenceCharge);
         
         for (const bond of this.bonds) {
             const pos1 = this.atoms[bond.atom1].pos;
             const pos2 = this.atoms[bond.atom2].pos;
 
-            const color = [bond.atom1, bond.atom2].map(i=>this.atoms[i]).some(shakecheck) ? `#${getIntOscillation(getCurrentFrame(), FPS/1.75, 120, 240).toString(16)}0000` : 'black';
+            const color = [bond.atom1, bond.atom2].some(shakecheck) ? `#${getIntOscillation(getCurrentFrame(), FPS/1.75, 120, 240).toString(16)}0000` : 'black';
 
             ctx.save();
             ctx.strokeStyle = color;
@@ -39,7 +58,7 @@ class Mol2D extends Molecule {
         for (let i = 0; i < this.atoms.length; i++) {
             const atom = this.atoms[i];
 
-            shakecheck(atom)
+            shakecheck(i)
             ? atom.drawFromPos(ctx, atom.pos.clone().add(new Victor(10*(0.5-Math.random()), 5*(0.5-Math.random()))))
             : atom.draw(ctx);
 
